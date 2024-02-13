@@ -2,33 +2,16 @@
 sidebar_position: 3
 ---
 
-# Create a Blog Post
+# Spatial Filtering and Digital Convolution
 
-Docusaurus creates a **page for each blog post**, but also a **blog index page**, a **tag system**, an **RSS** feed...
+> Point wise operations vs spatial filtering
 
-## Create your first Post
+## Introduction
 
-Create a file at `blog/2021-02-28-greetings.md`:
+Spatial filtering encompasses a range of operations applied directly to the pixel values in an image's spatial domain, manipulating image content to enhance features or suppress noise. This procedure utilizes a predefined matrix, termed a kernel or filter, to systematically alter each pixel's intensity by considering its neighborhood.
 
-```md title="blog/2021-02-28-greetings.md"
----
-slug: greetings
-title: Greetings!
-authors:
-  - name: Joel Marcey
-    title: Co-creator of Docusaurus 1
-    url: https://github.com/JoelMarcey
-    image_url: https://github.com/JoelMarcey.png
-  - name: Sébastien Lorber
-    title: Docusaurus maintainer
-    url: https://sebastienlorber.com
-    image_url: https://github.com/slorber.png
-tags: [greetings]
----
+The convolution operation, pivotal in spatial filtering, involves overlaying the kernel onto the image and computing the sum of element-wise products, assigning the result to the corresponding central pixel. This process iterates across the entire image, effectively transforming the pixel matrix based on the characteristics encoded in the kernel, leading to effects such as blurring, sharpening, edge detection, and more. 
 
-Congratulations, you have made your first post!
+In contrast to point operations, which remap pixel values independently, spatial filtering via convolution considers the contextual interplay of adjacent pixel values, offering nuanced control over the resultant image transformation.
 
-Feel free to play around and edit this post as much as you like.
-```
 
-A new blog post is now available at [http://localhost:3000/blog/greetings](http://localhost:3000/blog/greetings).

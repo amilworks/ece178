@@ -2,56 +2,66 @@
 sidebar_position: 2
 ---
 
-# Cameras and Imaging
+# Histogram Equalization
 
-Documents are **groups of pages** connected through:
+> What is an Image Histogram?
 
-- a **sidebar**
-- **previous/next navigation**
-- **versioning**
+## Introduction
 
-## Create your first Doc
+Histogram equalization is a method in image processing of contrast adjustment using the image's histogram. It is a technique for adjusting image intensities to enhance contrast. The method is useful in images with backgrounds and foregrounds that are both bright or both dark. In particular, the method can lead to better views of bone tissue in x-ray images, and to better detail in photographs that are over or under-exposed.
 
-Create a Markdown file at `docs/hello.md`:
+## Linear Time Invariant (LTI) Systems
 
-```md title="docs/hello.md"
-# Hello
+A system is linear time-invariant (LTI) when it observes the properties of linearity and time-invariance.
 
-This is my **first Docusaurus document**!
-```
+### Linear vs Non-Linear Systems
 
-A new document is now available at [http://localhost:3000/docs/hello](http://localhost:3000/docs/hello).
+A system that accepts an image as an input and produces an image as an output can be classified as linear if it adheres to the principles of additivity and homogeneity. The system, often represented as an operator $ T $, maps the set of all possible $ m \times n $ images to itself:
 
-## Configure the Sidebar
+$$
+T : \mathbb{R}^{m \times n} \rightarrow \mathbb{R}^{m \times n}
+$$
 
-Docusaurus automatically **creates a sidebar** from the `docs` folder.
+Here, $ m $ and $ n $ signify the dimensions of the image.
 
-Add metadata to customize the sidebar label and position:
+The operation performed by the system can be denoted as:
 
-```md title="docs/hello.md" {1-4}
----
-sidebar_label: 'Hi!'
-sidebar_position: 3
----
+$$
+T(f(\mathbf{x})) = g(\mathbf{x}) = T\{f\}(\mathbf{x})
+$$
 
-# Hello
+where $f(\mathbf{x})$ is the input image, $ g(\mathbf{x}) $ is the output image, and $ \mathbf{x} $ represents pixel coordinates.
 
-This is my **first Docusaurus document**!
-```
+### Additivity
 
-It is also possible to create your sidebar explicitly in `sidebars.js`:
+The system exhibits additivity if the output corresponding to the sum of two input images is the sum of the outputs for each image individually.
 
-```js title="sidebars.js"
-export default {
-  tutorialSidebar: [
-    'intro',
-    // highlight-next-line
-    'hello',
-    {
-      type: 'category',
-      label: 'Tutorial',
-      items: ['tutorial-basics/create-a-document'],
-    },
-  ],
-};
-```
+To demonstrate the property of additivity, consider two input images $ f_1(\mathbf{x}) $ and $ f_2(\mathbf{x}) $, and let $ g_1(\mathbf{x}) $ and $ g_2(\mathbf{x}) $ be the system's outputs for these images, respectively. The system is linear if:
+
+$$
+T(f_1(\mathbf{x}) + f_2(\mathbf{x})) = T(f_1(\mathbf{x})) + T(f_2(\mathbf{x}))
+$$
+
+Or in terms of $ g $:
+
+$$
+g_1(\mathbf{x}) = T(f_1(\mathbf{x})) \\
+g_2(\mathbf{x}) = T(f_2(\mathbf{x})) \\
+T(f_1(\mathbf{x}) + f_2(\mathbf{x})) = g_1(\mathbf{x}) + g_2(\mathbf{x})
+$$
+
+This implies that for any two images, the response of the system to their sum is equal to the sum of the responses to each image.
+
+### Homogeneity 
+
+ If the input is an image multiplied by a scalar, the output is the image multiplied by the same scalar.
+
+### Time-Invariant vs Time-Variant Systems
+
+A system is time-invariant if the output does not depend on the time at which the input is applied. In the context of images, this means that the output does not depend on the location of the input in the image.
+
+
+
+
+
+

@@ -21,7 +21,7 @@ An image can be conceived as a function that assigns an intensity value to every
 ---
 
 
-### Diving into Image Representation
+## Diving into Image Representation
 
 1. **Explicit Mathematical Representation**
    - Images can be described explicitly by mathematical equations where the intensity at any point $(s, t)$ is given by a continuous image function, $f_{st}(s, t)$. This approach is precise but often complex, as it requires an analytical form for the image, which is not always possible or practical for arbitrary images.
@@ -44,11 +44,11 @@ An image can be conceived as a function that assigns an intensity value to every
 I enjoy creating scalable vector graphics (SVG) for my diagrams and illustrations, especially in scientific and technical contexts. SVGs are resolution-independent and can be easily manipulated programmatically. Nobody wants to deal with blurry images, I hate seeing them in presentations and in publications. Even if the text is small in a vector image, you can infinitely zoom in and the text will still be sharp. No excuses.
 
 
-### Formalizing the Definition
+## Formalizing the Definition
 
 To digitize the continuous image function $f_{st}(s, t)$, we perform sampling and quantization. Through sampling, we obtain a digital image $f_{xy}(x, y)$ with $M$ rows and $N$ columns. The discrete coordinates, $x$ and $y$, are integers ranging from $0$ to $M-1$ and $0$ to $N-1$, respectively. The value of the digital image at any point is given by $f_{xy}(x, y)$, where the notation $f_{ij}(i, j)$ is used for specific integer coordinates. This discrete representation constitutes the spatial domain of the image.
 
-**Visualization and Interpretation:**
+### Visualization and Interpretation
 
 ![Docusaurus logo](/img/image-representation.png)
 
@@ -63,9 +63,43 @@ In the textbook[^1], Figure 2.18 above illustrates three modes of representing $
 - **Normalized Intensity Representation**
   - When intensities are normalized, they're scaled to fall within a certain range, typically from black at the lowest intensity to white at the highest, with varying grays in between. This normalized scale is crucial for displaying the image on various devices, ensuring consistency across different mediums.
 
-**Conclusion**
 
-The representation of an image, therefore, is a translation of continuous visual information into a discrete form that can be processed by digital systems. It encompasses the spatial domain where the image exists as a collection of discrete points, each with an associated intensity value derived from a continuous function. 
+
+## **Paper:** Compositing Digital Images
+> *Thomas Porter and Tom Duff, "Compositing Digital Images," Computer Graphics, 18(3), 253-259, 1984.*
+
+I read this paper while I was teaching this class and found it to be surprinsingly relevant to how I make aesthetic plots nowadays. 
+
+The paper "Compositing Digital Images" by Thomas Porter and Tom Duff addresses the challenge of how to accurately render images composed of separate elements that may overlap. __The problem__ is to determine the final color for each pixel, considering that elements can be semi-transparent, allowing background elements to show through.
+
+Porter and Duff introduce the concept of **alpha** to represent the transparency of an image. This leads to the definition of the **over operator**, which determines how the color from a foreground element should be combined with the color from the background.
+
+They provide mathematical formulas for compositing images using this operator, allowing for the creation of complex images from simpler components by layering them. Their approach accounts for varying levels of opacity and transparency in the composite image. Simple yet powerful, right?
+
+**Main Takeaway** The paper presents a method to pre-multiply the color by the alpha value, simplifying the arithmetic of the 'over' operator and improving the efficiency of the image compositing process. 
+
+This approach has become a foundational technique in digital image compositing, widely used in image processing and computer graphics. I think this is a cool and easy to read paper that you can quickly grasp in a limited amount of time. 
+
+
+## Quiz
+
+1. **What is the primary difference between raster and vector images?**
+   - Raster images are composed of a grid of pixels, while vector images are composed of geometric shapes.
+
+2. **What is the primary advantage of vector graphics over raster graphics?**
+    - Vector graphics are resolution-independent, meaning they can be scaled to any size without loss of quality.
+
+3. **What is the primary disadvantage of raster graphics?**
+    - Raster graphics are resolution-dependent, meaning they can become blurry when scaled to a larger size.
+
+4. **The digital representation of an image is obtained through which two processes?**
+    - Sampling and quantization.
+
+5. **What is the purpose of the over operator in digital image compositing?**
+
+
+
+
 
 
 
