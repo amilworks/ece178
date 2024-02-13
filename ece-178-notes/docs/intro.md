@@ -2,46 +2,23 @@
 sidebar_position: 1
 ---
 
-# Tutorial Intro
+# Start Here
 
-Let's discover **Docusaurus in less than 5 minutes**.
+> This is **Digital Image and Video Processing** taught at UCSB's Electrical and Computer Engineering Department. 
 
-## Getting Started
+## Why am I writing this
 
-Get started by **creating a new site**.
+I should probably be focusing on my research, but students in the class have asked for my notes, as well as some of the algorithmic implementations I have presented using `Python`. 
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+These notes are *very* rough and my goal is mainly for students to better understand the topic. If these notes help you, I would love to hear about it! __Throw a :star: on the GitHub repo!__
 
-### What you'll need
+## Where is the content from
 
-- [Node.js](https://nodejs.org/en/download/) version 18.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+Literally everywhere. Mostly Pradeep Sen's lecture slides, combined with the classic book, Digital Image Processing by R. C. Gonzalez & R. E. Woods[^1]. I highly recommend you read that book to supplement what I am showing here. My notes will be terse compared to that book. I will try to find nice images on Wikipedia or make my own to showcase some of the concepts.
 
-## Generate a new site
+## Who am I
 
-Generate a new Docusaurus site using the **classic template**.
+My name is Amil Khan[^2], and I am a PhD student in the Electrical and Computer Engineering Department at UC Santa Barbara. I am also a TA for this Winter 2024 course.
 
-The classic template will automatically be added to your project after you run the command:
-
-```bash
-npm init docusaurus@latest my-website classic
-```
-
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
-
-The command also installs all necessary dependencies you need to run Docusaurus.
-
-## Start your site
-
-Run the development server:
-
-```bash
-cd my-website
-npm run start
-```
-
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
-
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
-
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+[^1]: Gonzales, Rafael C., and Paul Wintz. _Digital image processing_. Addison-Wesley Longman Publishing Co., Inc., 1987.
+[^2]: https://amilworks.io

@@ -1,0 +1,71 @@
+---
+sidebar_position: 1
+---
+
+# Digital Images
+
+
+> Basics of digital images, and their representation. 
+
+Image representation is a fundamental concept in both digital image processing and computer graphics. The challenge lies in how to represent a continuous scene within the finite constraints of digital systems. Here, we will explore the nuances of image representation and formalize the definition in the context of digital imaging.
+
+**Let's Start Broad**
+An image can be conceived as a function that assigns an intensity value to every point in a two-dimensional space. This function encapsulates the essence of an image and can be represented in various forms. 
+
+### Diving into Image Representation
+
+1. **Explicit Mathematical Representation**
+   - Images can be described explicitly by mathematical equations where the intensity at any point $(s, t)$ is given by a continuous image function, $f_{st}(s, t)$. This approach is precise but often complex, as it requires an analytical form for the image, which is not always possible or practical for arbitrary images.
+
+2. **Implicit Programmatic Representation**
+   - A programmatic approach defines an image implicitly, where a function $I(x, y)$ computes the intensity at every point in the domain. This is versatile and powerful, especially when the image is too complex to be described by a simple equation or when it needs to be manipulated programmatically.
+
+3. **Vector Graphics Representation**
+   - Images can also be represented by a composition of geometric shapes like lines, curves, and polygons, each with a mathematical description. This method, known as vector graphics, is resolution-independent and particularly suited for images that comprise distinct shapes and lines.
+
+
+4. **Raster Graphics Representation**
+    - In raster graphics, images are represented as a grid of pixels, where each pixel has an associated intensity value. This is the most common form of image representation in digital systems, as it is well-suited for display and processing on digital devices.
+
+5. **Hybrid Representation**
+    - In practice, images are often represented using a combination of the above methods. For instance, a digital image may be stored as a raster graphic but contain vector graphics elements for annotations or overlays.
+
+### What do I like using?
+
+I enjoy creating scalable vector graphics (SVG) for my diagrams and illustrations, especially in scientific and technical contexts. SVGs are resolution-independent and can be easily manipulated programmatically. Nobody wants to deal with blurry images, I hate seeing them in presentations and in publications. Even if the text is small in a vector image, you can infinitely zoom in and the text will still be sharp. No excuses.
+
+
+### Formalizing the Definition
+
+To digitize the continuous image function $f_{st}(s, t)$, we perform sampling and quantization. Through sampling, we obtain a digital image $f_{xy}(x, y)$ with $M$ rows and $N$ columns. The discrete coordinates, $x$ and $y$, are integers ranging from $0$ to $M-1$ and $0$ to $N-1$, respectively. The value of the digital image at any point is given by $f_{xy}(x, y)$, where the notation $f_{ij}(i, j)$ is used for specific integer coordinates. This discrete representation constitutes the spatial domain of the image.
+
+**Visualization and Interpretation:**
+
+![Docusaurus logo](/img/image-representation.png)
+
+In the textbook[^1], Figure 2.18 above illustrates three modes of representing $f_{xy}(x, y)$:
+
+- **3D Plot Representation**
+  - Figure 2.18(a) depicts a three-dimensional plot where two axes represent spatial coordinates and the third axis represents intensity values. This is akin to a topographical map that shows the intensity at each point as a height in a 3D landscape.
+
+- **Display or Photographic Representation**
+  - In Figure 2.18(b), the image is shown as it would appear on a computer display or photograph. Here, the intensity of each pixel corresponds to the value of $f$ at that spatial location. For grayscale images, intensities are typically normalized within the range $[0, 1]$, translating to black, gray, or white visualizations.
+
+- **Normalized Intensity Representation**
+  - When intensities are normalized, they're scaled to fall within a certain range, typically from black at the lowest intensity to white at the highest, with varying grays in between. This normalized scale is crucial for displaying the image on various devices, ensuring consistency across different mediums.
+
+**Conclusion**
+
+The representation of an image, therefore, is a translation of continuous visual information into a discrete form that can be processed by digital systems. It encompasses the spatial domain where the image exists as a collection of discrete points, each with an associated intensity value derived from a continuous function. 
+
+
+
+
+
+
+
+
+
+
+
+[^1]: Rafael C. Gonzalez and Richard E. Woods, Digital Image Processing, 4th ed. (Pearson, 2018).
