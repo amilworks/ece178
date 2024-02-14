@@ -1,8 +1,8 @@
 {
-  "label": "Tutorial - Basics",
+  "label": "Notes",
   "position": 2,
   "link": {
     "type": "generated-index",
-    "description": "5 minutes to learn the most important Docusaurus concepts."
+    "description": "Class Notes for Digital Image Processing taught at UCSB ECE"
   }
 }

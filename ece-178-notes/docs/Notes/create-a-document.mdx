@@ -10,6 +10,45 @@ sidebar_position: 2
 
 Histogram equalization is a method in image processing of contrast adjustment using the image's histogram. It is a technique for adjusting image intensities to enhance contrast. The method is useful in images with backgrounds and foregrounds that are both bright or both dark. In particular, the method can lead to better views of bone tissue in x-ray images, and to better detail in photographs that are over or under-exposed.
 
+## What is an Image Histogram?
+
+An image histogram is a graphical representation of the distribution of intensity values in an image. It plots the number of pixels for each intensity value. The x-axis represents the intensity values, and the y-axis represents the number of pixels with that intensity value.
+
+## How to Compute an Image Histogram
+
+To calculate the histogram of a digital image, we must perform a frequency count of the intensity levels present across all pixels. Mathematically, for an 8-bit grayscale image, this involves the following:
+
+1. **Initialization**: Define a function $H: \{0, 1, \ldots, 255\} \rightarrow \mathbb{N}$ that maps each possible intensity level to a natural number, initialized to zero. This function represents the histogram, and the domain corresponds to the range of possible pixel intensities for an 8-bit image.
+
+2. **Accumulation**: Iterate over the image domain $D$, which consists of all pixel coordinates in the image. For each pixel located at $(i, j) \in D$ with intensity $I(i, j)$, increment the histogram function at the corresponding intensity level: $H[I(i, j)] = H[I(i, j)] + 1$.
+
+3. **Normalization**: To facilitate comparisons between images of different sizes or to represent the histogram as a probability distribution, normalize the histogram by dividing each $H[k]$ by the total number of pixels $N$, where $N = \text{width} \times \text{height}$ of the image.
+
+Implementing these steps in Python, we arrive at the following code, which rigorously follows the outlined mathematical procedure:
+
+```python
+import numpy as np
+
+def compute_histogram(image):
+    # Initialize the histogram array with zeros for each intensity level
+    histogram = np.zeros(256, dtype=int)
+    
+    # Iterate over each pixel in the image and accumulate histogram values
+    for intensity in image.ravel():
+        histogram[intensity] += 1
+    
+    # Normalize the histogram by dividing by the total number of pixels
+    normalized_histogram = histogram / image.size
+    
+    return normalized_histogram
+```
+
+In this code snippet, `image.ravel()` flattens the 2D image array into a 1D array for efficient processing. `image.size` gives the total number of pixels in the image, simplifying the normalization step. The resulting `normalized_histogram` array represents the relative frequency of each intensity level in the image.
+
+## How to Implement Histogram Equalization
+
+
+
 ## Linear Time Invariant (LTI) Systems
 
 A system is linear time-invariant (LTI) when it observes the properties of linearity and time-invariance.
@@ -52,9 +91,66 @@ $$
 
 This implies that for any two images, the response of the system to their sum is equal to the sum of the responses to each image.
 
+I will demonstrate the property of additivity using the following example:
+
+```python
+import numpy as np
+
+# Create two images
+f1 = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+f2 = np.array([[9, 8, 7], [6, 5, 4], [3, 2, 1]])
+
+# Create a system
+def T(f):
+    return f * 2
+
+# Compute the output for each image
+g1 = T(f1)
+g2 = T(f2)
+
+# Compute the output for the sum of the images
+g_sum = T(f1 + f2)
+
+# Verify the property of additivity
+assert np.array_equal(g_sum, g1 + g2)
+```
+
 ### Homogeneity 
 
  If the input is an image multiplied by a scalar, the output is the image multiplied by the same scalar.
+
+To demonstrate the property of homogeneity, consider an input image $ f(\mathbf{x}) $ and a scalar $ \alpha $. The system is linear if:
+
+$$
+T(\alpha f(\mathbf{x})) = \alpha T(f(\mathbf{x}))
+$$
+
+This implies that for any image and scalar, the response of the system to the scaled image is equal to the scaled response to the original image.
+
+I will demonstrate the property of homogeneity using the following example:
+
+```python
+import numpy as np
+
+# Create an image
+f = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+
+# Create a system
+def T(f):
+    return f * 2
+
+# Compute the output for the image
+g = T(f)
+
+# Compute the output for the scaled image
+g_scaled = T(f * 3)
+
+# Verify the property of homogeneity
+assert np.array_equal(g_scaled, g * 3)
+```
+
+If you have taken ECE 181, these topics should look very familiar to you.
+
 
 ### Time-Invariant vs Time-Variant Systems
 

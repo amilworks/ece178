@@ -2,13 +2,149 @@
 sidebar_position: 4
 ---
 
-# Markdown Features
+# Fast Fourier Transform
 
-Docusaurus supports **[Markdown](https://daringfireball.net/projects/markdown/syntax)** and a few **additional features**.
+> The Fast Fourier Transform (FFT), Divide and Conquer, Go Fast! 
 
-## Front Matter
+## Let's Review Quickly
 
-Markdown documents have metadata at the top called [Front Matter](https://jekyllrb.com/docs/front-matter/):
+### The 2D Discrete Fourier Transform (DFT) and its Inverse
+
+The **2D Discrete Fourier Transform (DFT)** is defined as:
+
+$$
+F(u, v) = \sum_{x=0}^{M-1} \sum_{y=0}^{N-1} f(x, y) e^{-j2\pi(\frac{ux}{M} + \frac{vy}{N})}
+$$
+
+where $f(x, y)$ is the input image, $F(u, v)$ is the transformed image, and $M$ and $N$ are the dimensions of the image.
+
+Given the transform $F(u,v)$, we can obtain $f(x,y)$ by using the inverse discrete Fourier transform (IDFT):
+
+$$
+f(x, y) = \frac{1}{MN} \sum_{u=0}^{M-1} \sum_{v=0}^{N-1} F(u, v) e^{j2\pi(\frac{ux}{M} + \frac{vy}{N})}
+$$
+
+These two equations constitute a 2-D discrete Fourier transform pair, $f(x, y) \leftrightarrow F(u, v)$. The proof is as follows:
+
+$$
+\begin{align*}
+f(x, y) &= \frac{1}{MN} \sum_{u=0}^{M-1} \sum_{v=0}^{N-1} F(u, v) e^{j2\pi(\frac{ux}{M} + \frac{vy}{N})} \\
+&= \frac{1}{MN} \sum_{u=0}^{M-1} \sum_{v=0}^{N-1} \left( \sum_{x=0}^{M-1} \sum_{y=0}^{N-1} f(x, y) e^{-j2\pi(\frac{ux}{M} + \frac{vy}{N})} \right) e^{j2\pi(\frac{ux}{M} + \frac{vy}{N})} \\
+&= \frac{1}{MN} \sum_{x=0}^{M-1} \sum_{y=0}^{N-1} f(x, y) \left( \sum_{u=0}^{M-1} \sum_{v=0}^{N-1} e^{j2\pi(\frac{ux}{M} + \frac{vy}{N})} e^{-j2\pi(\frac{ux}{M} + \frac{vy}{N})} \right) \\
+&= \frac{1}{MN} \sum_{x=0}^{M-1} \sum_{y=0}^{N-1} f(x, y) \\
+&= f(x, y)
+\end{align*}
+$$
+
+The proof for the inverse transform is similar. Does this make sense? Let me know if there are any mistakes and I will fix them.
+
+## What is the Fast Fourier Transform?
+
+The **Fast Fourier Transform (FFT)** is an algorithm that computes the Discrete Fourier Transform (DFT) of a sequence, or its inverse (IDFT). Fourier analysis converts a signal from its original domain (often time or space) to a representation in the frequency domain and vice versa.
+
+We can take advantage of the symmetry and periodicity of the complex exponential kernel in the DFT to compute the DFT in $\mathcal{O}[N\log N]$ time, where $N$ is the number of points in the sequence. This is a significant improvement over the $\mathcal{O}[N^2]$ time complexity of the naive DFT algorithm.
+
+## How does the FFT work?
+
+As discussed in class, the FFT is a fast, $\mathcal{O}[N\log N]$ algorithm to compute the DFT of a sequence, or its inverse. The DFT is defined as:
+
+$$
+F(k) = \sum_{n=0}^{N-1} f(n) e^{-i2\pi kn/N}
+$$
+
+where $f(n)$ is the input sequence, $F(k)$ is the transformed sequence, and $N$ is the number of points in the sequence.
+
+### FFT Algorithm (Radix-2 DIT)
+
+#### Overview
+
+The FFT algorithm computes the DFT in $\mathcal{O}[N\log N]$ time by using a divide-and-conquer approach. The algorithm recursively divides the input sequence into two smaller sequences, computes their DFTs, and then combines them to form the DFT of the original sequence. The algorithm is based on the observation that the DFT of a sequence of even length $N$ can be expressed in terms of the DFTs of its subsequences of length $N/2$.
+
+#### Data Flow Diagram for $N=8$ (Radix-2 DIT)
+
+![Data Flow Diagram for N=8](/img/DIT-FFT-butterfly.svg)
+
+The data flow diagram above shows the computation of the DFT of a sequence of length $N=8$ using the Radix-2 Decimation-In-Time (DIT) FFT algorithm. The diagram illustrates the divide-and-conquer approach of the algorithm, where the input sequence is divided into two smaller sequences, and their DFTs are computed recursively. The diagram also shows the "butterfly" operations, which combine the DFTs of the smaller sequences to form the DFT of the original sequence.
+
+#### Pseudocode
+
+The following pseudocode describes the FFT algorithm for a sequence of length $N = 2^m$:
+
+```plaintext
+function FFT(f, N, s):
+    if N == 1:
+        return f
+    else:
+        f_even = [f[2*n] for n in range(N//2)]
+        f_odd = [f[2*n + 1] for n in range(N//2)]
+        F_even = FFT(f_even, N//2, 2*s)
+        F_odd = FFT(f_odd, N//2, 2*s)
+        F = [0]*N
+        for k in range(N//2):
+            F[k] = F_even[k] + exp(-2j*pi*k/N)*F_odd[k]
+            F[k + N//2] = F_even[k] - exp(-2j*pi*k/N)*F_odd[k]
+        return F
+```
+
+The function `FFT` takes as input a sequence `f` of length `N` and a stride `s` (which is used to compute the twiddle factors). If the length of the sequence is 1, the function returns the sequence itself. Otherwise, it divides the sequence into two subsequences of even and odd indices, computes their DFTs recursively, and then combines them to form the DFT of the original sequence.
+
+#### Rough Implementation
+
+The following example demonstrates how to use the FFT algorithm to compute the DFT of a sequence:
+
+```python
+def FFT(f, N, s):
+    if N == 1:
+        return f
+    else:
+        f_even = [f[2*n] for n in range(N//2)]
+        f_odd = [f[2*n + 1] for n in range(N//2)]
+        F_even = FFT(f_even, N//2, 2*s)
+        F_odd = FFT(f_odd, N//2, 2*s)
+        F = [0]*N
+        for k in range(N//2):
+            F[k] = F_even[k] + exp(-2j*pi*k/N)*F_odd[k]
+            F[k + N//2] = F_even[k] - exp(-2j*pi*k/N)*F_odd[k]
+        return F
+
+# Example usage
+f = [1, 2, 3, 4]
+N = len(f)
+s = 1
+F = FFT(f, N, s)
+print(F)
+```
+
+
+
+
+
+## How to use the FFT in `Python`
+
+The FFT can be used in Python by using the `numpy.fft` module. The following code snippet demonstrates how to use the FFT to compute the DFT of a sequence:
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Number of sample points
+N = 600
+
+# sample spacing
+T = 1.0 / 800.0
+x = np.linspace(0.0, N*T, N, endpoint=False)
+y = np.sin(50.0 * 2.0*np.pi*x) + 0.5*np.sin(80.0 * 2.0*np.pi*x)
+yf = np.fft.fft(y)
+xf = np.linspace(0.0, 1.0/(2.0*T), N//2)
+
+plt.plot(xf, 2.0/N * np.abs(yf[0:N//2]))
+plt.grid()
+plt.show()
+```
+
+
+
+
 
 ```text title="my-doc.md"
 // highlight-start
@@ -33,33 +169,7 @@ Regular Markdown links are supported, using url paths or relative file paths.
 Let's see how to [Create a page](/create-a-page).
 ```
 
-```md
-Let's see how to [Create a page](./create-a-page.md).
-```
 
-**Result:** Let's see how to [Create a page](./digital-images.md).
-
-## Images
-
-Regular Markdown images are supported.
-
-You can use absolute paths to reference images in the static directory (`static/img/docusaurus.png`):
-
-```md
-![Docusaurus logo](/img/docusaurus.png)
-```
-
-![Docusaurus logo](/img/docusaurus.png)
-
-You can reference images relative to the current file as well. This is particularly useful to colocate images close to the Markdown files using them:
-
-```md
-![Docusaurus logo](./img/docusaurus.png)
-```
-
-## Code Blocks
-
-Markdown code blocks are supported with Syntax highlighting.
 
 ````md
 ```jsx title="src/components/HelloDocusaurus.js"

@@ -8,11 +8,13 @@ import {themes as prismThemes} from 'prism-react-renderer';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'ECE 178 Notes',
   tagline: 'Digital Image Processing',
   favicon: 'img/favicon.ico',
+  
 
   // Set the production url of your site here
   url: 'https://your-docusaurus-site.example.com',
@@ -79,7 +81,7 @@ const config = {
       // Replace with your project's social card
       image: 'img/docusaurus-social-card.jpg',
       navbar: {
-        title: 'My Site',
+        title: 'ECE 178 Notes',
         logo: {
           alt: 'My Site Logo',
           src: 'img/logo.svg',
@@ -94,13 +96,13 @@ const config = {
           {to: '/blog', label: 'Blog', position: 'left'},
           {
             href: 'https://github.com/facebook/docusaurus',
-            label: 'GitHub',
+            label: '⭐ GitHub',
             position: 'right',
           },
         ],
       },
       footer: {
-        style: 'dark',
+        style: 'light',
         links: [
           {
             title: 'Docs',
@@ -142,7 +144,7 @@ const config = {
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Amilworks, Inc. Built with ❤️ in Santa Barbara, CA.`,
       },
       prism: {
         theme: prismThemes.github,
