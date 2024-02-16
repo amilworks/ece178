@@ -99,7 +99,7 @@ function FFT(f, N, s):
         return F
 ```
 
-The function `FFT` takes as input a sequence `f` of length `N` and a stride `s` (which is used to compute the twiddle factors). If the length of the sequence is 1, the function returns the sequence itself. Otherwise, it divides the sequence into two subsequences of even and odd indices, computes their DFTs recursively, and then combines them to form the DFT of the original sequence.
+The function `FFT` takes as input a sequence `f` of length `N` and a stride `s` (which is used to compute the twiddle factors). If the length of the sequence is 1, the function returns the sequence itself. Otherwise, it divides the sequence into two subsequences of even and odd indices, computes their DFTs recursively, and then combines them to form the DFT of the original sequence[^3].
 
 #### Rough Implementation
 
@@ -174,13 +174,57 @@ For an $N \times N$ image, $N$ even, the cost of a 2D FFT is proportional to $N^
 
 
 
-## Example Problems
 
-### Problem 1
+## Problem 1
+
+Compute the DFT of the following sequence using the FFT algorithm:
+
+$$
+x = [-j, 0, j, 1]
+$$
+
+:::danger Just a Heads Up
+
+This is slightly different than the homework problem, so don't go copying this exactly. Nonetheless, this should give you a solid start!
+
+:::
 
 
-1. Using `Python`, compute the FFT of the following sequence: $f = [1, 2, 3, 4]$.
-2. Now, by hand, compute the FFT of the following sequence: $f = [1, 2, 3, 4]$.
+### Solution
+
+To compute the Discrete Fourier Transform (DFT) of the sequence $x = [-j, 0, j, 1]$ using the Fast Fourier Transform (FFT) algorithm, we'll follow the Cooley-Tukey FFT algorithm's radix-2 decimation-in-time approach, assuming $N=4$, which is a power of 2.
+
+The FFT algorithm decomposes the DFT of a sequence into smaller DFTs to reduce the computational complexity. The decomposition follows:
+
+1. **Divide** the sequence into two sequences: one containing the even-indexed elements and the other containing the odd-indexed elements.
+2. **Compute** the DFT of these smaller sequences.
+3. **Combine** these DFTs to get the DFT of the original sequence.
+
+Given $x = [-j, 0, j, 1]$, let's denote the DFT of $x$ as $X[k]$, where $k = 0, 1, 2, 3$.
+
+#### Step 1: Divide
+- Even-indexed elements: $x_{even} = [-j, j]$
+- Odd-indexed elements: $x_{odd} = [0, 1]$
+
+#### Step 2: Compute DFT of Smaller Sequences
+- For $N=2$, the DFT can be computed directly:
+  - DFT of $x_{even}$: $X_{even}[0] = -j + j = 0$, $X_{even}[1] = -j - j = -2j$
+  - DFT of $x_{odd}$: $X_{odd}[0] = 0 + 1 = 1$, $X_{odd}[1] = 0 - 1 = -1$
+
+#### Step 3: Combine
+- Using the FFT combination step, where the twiddle factors for $N=4$ are $W_N^k = e^{-j\frac{2\pi}{N}k}$ for $k=0,1,2,3$, we get:
+  - $$X[0] = X_{even}[0] + W_4^0 \cdot X_{odd}[0] = 0 + 1 \cdot 1 = 1$$
+  - $$X[1] = X_{even}[1] + W_4^1 \cdot X_{odd}[1] = -2j + e^{-j\frac{\pi}{2}} \cdot (-1) = -2j + j = -j$$
+  - $$X[2] = X_{even}[0] - W_4^0 \cdot X_{odd}[0] = 0 - 1 \cdot 1 = -1$$
+  - $$X[3] = X_{even}[1] - W_4^1 \cdot X_{odd}[1] = -2j - e^{-j\frac{\pi}{2}} \cdot (-1) = -2j - j = -3j$$
+
+Therefore, the DFT $X[k]$ of the sequence $x = [-j, 0, j, 1]$ using the FFT algorithm is:
+
+$$
+X = [1, -j, -1, -3j]
+$$
+
+This solution demonstrates the basic principles behind the FFT algorithm's efficiency: by breaking down the DFT computation into smaller parts and reusing results, we significantly reduce the computational effort compared to directly computing the DFT. Once again, if I made any mistakes, please let me know! 
 
 
 ## Problem 2
@@ -296,3 +340,5 @@ This is <Highlight color="#1877F2">Facebook blue</Highlight> ! */}
 [^1]:  https://en.wikipedia.org/wiki/Cooley--Tukey_FFT_algorithm
 
 [^2]:  https://www.cs.cmu.edu/afs/andrew/scs/cs/15-463/2001/pub/www/notes/fourier/fourier.pdf
+
+[^3]:  E. Oran Brigham, *The Fast Fourier Transform*, Prentice Hall, Englewood Cliffs, NJ, 1974.

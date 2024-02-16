@@ -42,23 +42,6 @@ $$
 
 The proof for the inverse transform is similar. Does this make sense? Let me know if there are any mistakes and I will fix them.
 
-{/* Javascript code to visualize DFT */}
-```jsx
-<script>
-  function plotDFT() {
-    var x = [-1, 0, 1, 0];
-    var N = x.length;
-    var X = new Array(N);
-    for (var k = 0; k < N; k++) {
-      X[k] = 0;
-      for (var n = 0; n < N; n++) {
-        X[k] += x[n] * Math.cos(2 * Math.PI * k * n / N);
-      }
-    }
-    console.log(X);
-  }
-</script>
-```
 
 
 ## Proof of the 2D DFT
@@ -103,82 +86,8 @@ $$
 
 
 
+
 ### Problem 1
-
-Compute the DFT of the following sequence using the FFT algorithm:
-
-$$
-x = [-j, 0, j, 1]
-$$
-
-:::danger Just a Heads Up
-
-This is slightly different than the homework problem, so don't go copying this exactly. Nonetheless, this should give you a solid start!
-
-:::
-
-
-#### Solution
-
-To compute the Discrete Fourier Transform (DFT) of the given discrete signal $x = [-j, 0, j, 1]$, we'll use the DFT formula that you should be an expert in by now:
-
-$$
-X[k] = \sum_{n=0}^{N-1} x[n] \cdot e^{-j\frac{2\pi}{N}kn}
-$$
-
-where $N$ is the number of samples in the signal (in this case, $N=4$), $x[n]$ is the $n$-th sample of the input signal, $k$ is the current frequency bin (ranging from 0 to $N-1$), and $X[k]$ is the DFT at frequency bin $k$.
-
-Given $x = [-j, 0, j, 1]$, let's compute $X[k]$ for $k = 0, 1, 2, 3$.
-
-##### For $k=0$:
-
-$$
-X[0] = \sum_{n=0}^{3} x[n] \cdot e^{-j\frac{2\pi}{4}(0)n} = \sum_{n=0}^{3} x[n] \cdot 1
-$$
-$$
-X[0] = -j + 0 + j + 1 = 1
-$$
-
-##### For $k=1$:
-
-$$
-X[1] = \sum_{n=0}^{3} x[n] \cdot e^{-j\frac{2\pi}{4}(1)n}
-$$
-$$
-X[1] = -j \cdot e^{-j\frac{\pi}{2}(0)} + 0 \cdot e^{-j\frac{\pi}{2}(1)} + j \cdot e^{-j\frac{\pi}{2}(2)} + 1 \cdot e^{-j\frac{\pi}{2}(3)}
-$$
-$$
-X[1] = -j + 0 - j - 1 = -j - 1
-$$
-
-##### For $k=2$:
-
-$$
-X[2] = \sum_{n=0}^{3} x[n] \cdot e^{-j\frac{2\pi}{4}(2)n}
-$$
-$$
-X[2] = -j \cdot e^{-j\pi(0)} + 0 \cdot e^{-j\pi(1)} + j \cdot e^{-j\pi(2)} + 1 \cdot e^{-j\pi(3)}
-$$
-$$
-X[2] = -j + 0 + j - 1 = -1
-$$
-
-##### For $k=3$:
-
-$$
-X[3] = \sum_{n=0}^{3} x[n] \cdot e^{-j\frac{2\pi}{4}(3)n}
-$$
-$$
-X[3] = -j \cdot e^{-j\frac{3\pi}{2}(0)} + 0 \cdot e^{-j\frac{3\pi}{2}(1)} + j \cdot e^{-j\frac{3\pi}{2}(2)} + 1 \cdot e^{-j\frac{3\pi}{2}(3)}
-$$
-$$
-X[3] = -j + 0 - j + 1 = 1 - j
-$$
-
-Therefore, the DFT of the signal $x = [-j, 0, j, 1]$ is $X = [1, -j - 1, -1, 1 - j]$. Once again, if I made any mistakes, please let me know! 
-
-
-### Problem 2
 
 Using `Python`, solve the following problems:
 

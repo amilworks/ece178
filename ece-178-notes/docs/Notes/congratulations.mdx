@@ -2,9 +2,84 @@
 sidebar_position: 6
 ---
 
-# Congratulations!
+# Convolution and Fourier Transform
 
-You have just learned the **basics of Docusaurus** and made some changes to the **initial template**.
+> The relationship between convolution and the Fourier transform. 
 
-Docusaurus has **much more to offer**!
+## Convolution 
+
+We will start with convolution. The Convolution operation takes two functions and produces a third function. It is defined as the integral of the product of the two functions after one is reversed and shifted. The **convolution of two functions** $f(t)$ and $g(t)$ is denoted by $f(t) * g(t)$ and is defined as:
+
+$$
+(f * g)(t) = \int_{-\infty}^{\infty} f(\tau) g(t - \tau) d\tau
+$$
+
+The minus sign accounts for the flipping, $t$ is the shifting variable needed to slide one function past the other, and $\tau$ is the dummy variable of integration. 
+
+The convolution of two functions is a third function that represents the amount of overlap between the two functions as one is shifted over the other. As we said before, the convolution operation is commutative, meaning that 
+
+$$
+f * g = g * f
+$$
+
+It is also associative, meaning that 
+
+$$
+(f * g) * h = f * (g * h)
+$$
+
+The convolution of a function with a delta function is the function itself, i.e. $f(t) * \delta(t) = f(t)$. The convolution of a function with a step function is the integral of the function, i.e. 
+
+$$
+f(t) * u(t) = \int_{-\infty}^{t} f(\tau) d\tau
+$$
+
+### Convolution Theorem
+
+The convolution theorem states that the Fourier transform of the convolution of two functions is equal to the product of their Fourier transforms. Mathematically, the convolution theorem is stated as:
+
+$$
+\mathcal{F}\{f * g\} = \mathcal{F}\{f\} \cdot \mathcal{F}\{g\}
+$$
+
+where $\mathcal{F}\{f\}$ and $\mathcal{F}\{g\}$ are the Fourier transforms of $f(t)$ and $g(t)$, respectively. The convolution theorem is very useful in signal processing and communication systems. It allows us to perform convolution in the time domain by simply multiplying the Fourier transforms of the two functions and then taking the inverse Fourier transform of the result. This is much easier than performing the convolution directly in the time domain.
+
+### Proof of the Convolution Theorem
+
+The proof of the convolution theorem is quite simple. We start with the definition of the Fourier transform of the convolution of two functions:
+
+$$
+\mathcal{F}\{f * g\} = \int_{-\infty}^{\infty} (f * g)(t) e^{-j\omega t} dt
+$$
+
+Using the definition of the convolution, we can write the above equation as:
+
+$$
+\mathcal{F}\{f * g\} = \int_{-\infty}^{\infty} \left[ \int_{-\infty}^{\infty} f(\tau) g(t - \tau) d\tau \right] e^{-j\omega t} dt
+$$
+
+We can interchange the order of integration (I think its called Fubini's Theorem, whatever close enough) and write the above equation as:
+
+$$
+\mathcal{F}\{f * g\} = \int_{-\infty}^{\infty} f(\tau) \left[ \int_{-\infty}^{\infty} g(t - \tau) e^{-j\omega t} dt \right] d\tau
+$$
+
+The integral inside the square brackets is the Fourier transform of $g(t - \tau)$, which is $G(\omega) e^{-j\omega \tau}$. This leverages the shift property of the Fourier transform, specifically $\mathcal{F}\{g(t - \tau)\} = G(\omega) e^{-j\omega \tau}$. This is how the time-domain shift becomes a phase shift in the frequency domain.
+
+Substituting this into the above equation, we get:
+
+$$
+\mathcal{F}\{f * g\} = \int_{-\infty}^{\infty} f(\tau) G(\omega) e^{-j\omega \tau} d\tau
+$$
+
+This is the product of the Fourier transform of $f(t)$ and $g(t)$, i.e. $\mathcal{F}\{f\} \cdot \mathcal{F}\{g\}$. More specifically,
+
+$$
+\begin{align*}
+\mathcal{F}\{f * g\} &= G(\omega) \int_{-\infty}^{\infty} f(\tau) e^{-j\omega \tau} d\tau \\
+&= \mathcal{F}\{f\} \cdot \mathcal{F}\{g\}
+\end{align*}
+$$
+
+So, we have $G(\omega)F(\omega)$, which is the product of the Fourier transforms of $f(t)$ and $g(t)$. I hope this completes the proof of the convolution theorem.
 
