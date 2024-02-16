@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkece_178_notes=self.webpackChunkece_178_notes||[]).push([[6400],{1718:e=>{e.exports=JSON.parse('{"label":"hola","permalink":"/ece178/blog/tags/hola","allTagsPath":"/ece178/blog/tags","count":1,"unlisted":false}')}}]);

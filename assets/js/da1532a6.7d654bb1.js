@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkece_178_notes=self.webpackChunkece_178_notes||[]).push([[3046],{4999:e=>{e.exports=JSON.parse('{"permalink":"/ece178/blog/tags/facebook","page":1,"postsPerPage":10,"totalPages":1,"totalCount":1,"blogDescription":"Blog","blogTitle":"Blog"}')}}]);
