@@ -9,6 +9,7 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 
 
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'ECE 178 Notes',

@@ -1,0 +1,68 @@
+---
+sidebar_position: 3
+---
+
+# Spatial Filtering and Digital Convolution
+
+> Point wise operations vs spatial filtering
+
+## Introduction
+
+Spatial filtering encompasses a range of operations applied directly to the pixel values in an image's spatial domain, manipulating image content to enhance features or suppress noise. This procedure utilizes a predefined matrix, termed a kernel or filter, to systematically alter each pixel's intensity by considering its neighborhood.
+
+The convolution operation, pivotal in spatial filtering, involves overlaying the kernel onto the image and computing the sum of element-wise products, assigning the result to the corresponding central pixel. This process iterates across the entire image, effectively transforming the pixel matrix based on the characteristics encoded in the kernel, leading to effects such as blurring, sharpening, edge detection, and more. 
+
+In contrast to point operations, which remap pixel values independently, spatial filtering via convolution considers the contextual interplay of adjacent pixel values, offering nuanced control over the resultant image transformation.
+
+## Convolution
+
+The convolution operation is defined as the integral of the product of two functions, with one of the functions being reversed and shifted. In the context of image processing, the convolution of an image $f(x,y)$ with a kernel $h(x,y)$ is expressed as:
+
+$$g(x,y) = f(x,y) \ast h(x,y) = \sum_{s=-a}^{a} \sum_{t=-b}^{b} h(s,t)f(x-s,y-t)$$
+
+where $g(x,y)$ is the output image, $h(x,y)$ is the kernel, and $a$ and $b$ are the half-widths of the kernel in the $x$ and $y$ directions, respectively.
+
+The convolution operation is commutative, meaning that the order of the operands does not affect the result. However, in the context of image processing, the kernel is typically flipped both horizontally and vertically before the convolution operation, resulting in a process known as cross-correlation. This is due to the fact that the convolution operation is equivalent to the cross-correlation of the image with the flipped kernel.
+
+## Types of Spatial Filtering
+
+Spatial filtering encompasses a wide range of operations, each tailored to specific image processing tasks. The following are some of the most common spatial filtering techniques:
+
+### Smoothing
+
+Smoothing filters, also known as **low-pass filters**, are designed to reduce noise and detail in an image, resulting in a blurred appearance. The Gaussian filter is a popular choice for smoothing, as it applies a weighted average to the pixel values in the neighborhood, with the weights determined by a Gaussian function. This results in a smoothing effect that preserves edges and fine details.
+
+This is defined as:
+
+$$h(x,y) = \frac{1}{2\pi\sigma^2}e^{-\frac{x^2+y^2}{2\sigma^2}}$$
+
+where $h(x,y)$ is the Gaussian kernel, and $\sigma$ is the standard deviation of the Gaussian function.
+
+### Sharpening
+
+Sharpening filters, also known as **high-pass filters**, are designed to enhance the edges and fine details in an image, resulting in a more pronounced appearance. The Laplacian filter is a popular choice for sharpening, as it highlights the high-frequency components of the image, effectively enhancing the edges and fine details.
+
+### Edge Detection
+
+Edge detection filters are designed to identify the boundaries between objects in an image, resulting in a binary representation of the edges. The Sobel filter is a popular choice for edge detection, as it computes the gradient of the image in the $x$ and $y$ directions, effectively highlighting the edges in the image.
+
+The Sobel filter is defined as:
+
+$$h_x = \begin{bmatrix} -1 & 0 & 1 \\ -2 & 0 & 2 \\ -1 & 0 & 1 \end{bmatrix}$$
+
+$$h_y = \begin{bmatrix} -1 & -2 & -1 \\ 0 & 0 & 0 \\ 1 & 2 & 1 \end{bmatrix}$$
+
+where $h_x$ and $h_y$ are the Sobel kernels for the $x$ and $y$ directions, respectively.
+
+
+
+### Embossing
+
+Embossing filters are designed to create a three-dimensional effect in an image, resulting in a raised or recessed appearance. The emboss filter is a popular choice for embossing, as it applies a directional kernel to the image, creating a three-dimensional effect.
+
+### Custom Kernels
+
+Custom kernels are designed to perform specific image processing tasks, such as blurring, sharpening, edge detection, and embossing. An example of a custom kernel is the unsharp mask, which is designed to enhance the edges and fine details in an image, resulting in a more pronounced appearance.
+
+
+
