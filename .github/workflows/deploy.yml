@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   deploy:
-      defaults:
+    defaults:
       run:
         working-directory: ece-178-notes
     name: Deploy to GitHub Pages
@@ -25,6 +25,8 @@ jobs:
         with:
           node-version: 18
           cache: yarn
+          cache-dependency-path: ece-178-notes/package-lock.json
+
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
