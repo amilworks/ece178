@@ -51,15 +51,15 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+            'https://github.com/amilworks/ece178/edit/main/ece-178-notes/',
         },
-        blog: {
-          showReadingTime: true,
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-        },
+        // blog: {
+        //   showReadingTime: true,
+        //   // Please change this to your repo.
+        //   // Remove this to remove the "edit this page" links.
+        //   editUrl:
+        //     'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+        // },
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -92,11 +92,11 @@ const config = {
             type: 'docSidebar',
             sidebarId: 'tutorialSidebar',
             position: 'left',
-            label: 'Tutorial',
+            label: 'Course Notes',
           },
-          {to: '/blog', label: 'Blog', position: 'left'},
+          {href: 'https://www.canvas.ucsb.edu/', label: 'UCSB Canvas', position: 'left'},
           {
-            href: 'https://github.com/facebook/docusaurus',
+            href: 'https://github.com/amilworks/ece178',
             label: '⭐ GitHub',
             position: 'right',
           },
@@ -109,8 +109,12 @@ const config = {
             title: 'Docs',
             items: [
               {
-                label: 'Tutorial',
+                label: 'Course Notes',
                 to: '/docs/intro',
+              },
+              {
+                label: 'Programming Help',
+                to: '/docs/category/programming-help',
               },
             ],
           },
@@ -118,30 +122,39 @@ const config = {
             title: 'Community',
             items: [
               {
+                label: 'ChatGPT',
+                href: 'https://chat.openai.com/',
+              },
+              {
+                label: 'GitHub',
+                href: 'https://github.com/amilworks/ece178',
+              },
+              {
                 label: 'Stack Overflow',
-                href: 'https://stackoverflow.com/questions/tagged/docusaurus',
+                href: 'https://stackoverflow.com/questions/tagged/image-processing',
               },
-              {
-                label: 'Discord',
-                href: 'https://discordapp.com/invite/docusaurus',
-              },
-              {
-                label: 'Twitter',
-                href: 'https://twitter.com/docusaurus',
-              },
+
+              // {
+              //   label: 'Twitter',
+              //   href: 'https://twitter.com/',
+              // },
             ],
           },
           {
             title: 'More',
             items: [
               {
-                label: 'Blog',
-                to: '/blog',
+                label: 'UCSB Canvas',
+                href: 'https://www.canvas.ucsb.edu/',
               },
               {
-                label: 'GitHub',
-                href: 'https://github.com/facebook/docusaurus',
+                label: 'Amilworks',
+                href: 'https://amilworks.io',
               },
+              {
+                label: 'UCSB ECE Department',
+                href: 'https://www.ece.ucsb.edu/',
+              }
             ],
           },
         ],
