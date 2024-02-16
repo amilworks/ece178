@@ -83,8 +83,8 @@ const config = {
       navbar: {
         title: 'ECE 178 Notes',
         logo: {
-          alt: 'My Site Logo',
-          src: 'img/logo.svg',
+          alt: 'ECE 178 Logo',
+          src: 'img/logo-ece178.webp',
         },
         items: [
           {

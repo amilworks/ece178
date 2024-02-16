@@ -10,6 +10,15 @@ sidebar_position: 2
 
 Histogram equalization is a method in image processing of contrast adjustment using the image's histogram. It is a technique for adjusting image intensities to enhance contrast. The method is useful in images with backgrounds and foregrounds that are both bright or both dark. In particular, the method can lead to better views of bone tissue in x-ray images, and to better detail in photographs that are over or under-exposed.
 
+import ImageSignalVisualization from '/src/components/HomepageFeatures/ImageSignalVisualization';
+
+
+<ImageSignalVisualization imagePath="/img/basketball-player-dunking-amil-team.webp" />
+
+> **Interactive Visualization**: I made this interactive visualization to visually represent the intensity levels of an image in 3D space. Feel free to move the image around, and *definitely zoom in*. You will be able to see the peaks and valleys of the image signal in 3D space.
+
+ Here I am using the image of a basketball player dunking to visualize the "signal" of an image in 3D space. At first I calculated the grayscale intensity for each pixel and create a 3D plane geometry where each vertex's z-coordinate corresponds to the pixel's intensity, effectively visualizing the image signal in 3D. Using this method yielded a poor visualization where I couldn't see much, pretty much trash. So I calculated a color for each vertex based on its z-position (intensity) and used an HSL color model to generate a gradient. This gradient visually represents the intensity levels across the mesh. Now, the hue varies from blue (low intensity) to red (high intensity).
+
 ## What is an Image Histogram?
 
 An image histogram is a graphical representation of the distribution of intensity values in an image. It plots the number of pixels for each intensity value. The x-axis represents the intensity values, and the y-axis represents the number of pixels with that intensity value.
