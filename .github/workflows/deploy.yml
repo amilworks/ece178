@@ -12,6 +12,9 @@ permissions:
 
 jobs:
   deploy:
+      defaults:
+      run:
+        working-directory: ece-178-notes
     name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
     steps:
@@ -35,7 +38,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           # Build output to publish to the `gh-pages` branch:
-          publish_dir: ./build
+          publish_dir: ./ece-178-notes/build
           # The following lines assign commit authorship to the official
           # GH-Actions bot for deploys to `gh-pages` branch:
           # https://github.com/actions/checkout/issues/13#issuecomment-724415212
