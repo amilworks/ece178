@@ -83,3 +83,67 @@ $$
 
 So, we have $G(\omega)F(\omega)$, which is the product of the Fourier transforms of $f(t)$ and $g(t)$. I hope this completes the proof of the convolution theorem.
 
+## Deconvolution
+
+:::tip Paper to Read
+
+Please read the following paper *"Coded Exposure Photography: Motion Deblurring Using Fluttered Shutter" by Ramesh Raskar et al.[^1]* to understand the application of deconvolution in image processing.
+
+:::
+
+
+
+In the realm of image processing, capturing clear images of moving objects remains a significant challenge due to motion blur. This blur occurs when the camera's shutter is open long enough for the movement of the subject or the camera itself to be recorded as a blur. Traditional photography techniques often struggle to balance the need for sufficient light with the desire to freeze motion, especially in low-light conditions.
+
+### The Problem
+
+The primary issue addressed by the paper "Coded Exposure Photography: Motion Deblurring Using Fluttered Shutter" by Ramesh Raskar et al. is motion blur in photographs. Motion blur significantly degrades image quality, particularly in low-light conditions or when capturing fast-moving subjects. Traditional methods to reduce motion blur, such as shortening the exposure time, increasing lighting, or using flash, are not always practical or effective and can introduce other trade-offs like noise or loss of ambient scene details.
+
+### What They Solved
+
+The authors propose an innovative solution to the motion blur problem: coded exposure photography using a fluttered shutter. This technique involves modulating the camera's exposure over time in a coded pattern, allowing more light in while still capturing sharp images of moving objects. The key innovation lies in the ability to deblur the images post-capture, using the known exposure pattern to reverse the motion blur in a way that traditional photography cannot.
+
+#### Key Contributions Section
+
+The authors broke down the motion deblurring problem into three parts: capture-time decision for motion encoding, PSF estimation and image deconvolution. The key novelty of their methods stem from **modifying the capture-time temporal integration to minimize the loss of high spatial frequencies of blurred objects.**
+
+- Computed a near-optimal binary coded sequence for modulating the exposure and analyze the invertibility of the process,
+- Presented techniques to decode images of partially-occluded background and foreground objects,
+- Showed how to handle extremely large degrees of blur.
+
+### Their Method
+
+The method involves the following key steps:
+
+1. **Coded Shutter**: Instead of a constant open/close shutter action, the shutter rapidly opens and closes in a predefined pattern during the exposure time. This pattern is designed to encode motion information into the captured image.
+   
+2. **Motion Deblurring**: The captured image, which contains motion-blurred information encoded through the fluttered shutter, is processed using an algorithm that understands the coded pattern. This algorithm mathematically reverses the motion blur, reconstructing a sharp image of the moving subject.
+
+3. **Algorithmic Reconstruction**: The deblurring process utilizes the known coded exposure pattern and applies a deconvolution algorithm. This step is crucial for decoding the motion information and restoring image clarity.
+
+#### Mathematical Model
+
+The authors developed a mathematical model to describe the motion blur as a convolution of the scene motion with the camera's exposure function. This model allowed them to design a coded exposure pattern that would minimize the loss of high spatial frequencies of blurred objects. They also developed an algorithm to decode the motion information and reconstruct the sharp image.
+
+{/* We will define the important deconvolution step as follows:
+
+$$
+\hat{f}(x) = \arg \min_{f} \left\{ \frac{1}{2} \left\| h * f - g \right\|_2^2 + \lambda \Phi(f) \right\}
+$$
+
+where $h$ is the point spread function (PSF) of the motion blur, $g$ is the observed image, and $\Phi(f)$ is a regularization term. The authors used a total variation (TV) regularization term to promote sparsity in the gradient of the reconstructed image, which helps to preserve edges and fine details. */}
+
+
+
+### Relevance to Image Processing Class
+
+This paper's approach to motion deblurring is highly relevant to our image processing class for several reasons:
+
+- **Innovative Use of Image Processing Techniques**: It demonstrates a creative application of deconvolution and algorithmic image reconstruction, key topics in our course.
+- **Understanding of Motion Blur**: It offers a practical understanding of motion blur as a convolution of the scene motion with the camera's exposure function, aligning with our studies on convolution and filtering.
+- **Algorithmic Problem Solving**: The method showcases how algorithms can solve real-world problems in image processing, emphasizing the importance of mathematical models in developing practical solutions.
+- **Exposure to Cutting-edge Research**: Exploring this paper gives students insight into how current research addresses complex challenges in photography and image processing, encouraging innovation and application of course concepts to novel problems.
+
+This is a very quick overview and I did not go over all the details of the paper here. I encourage you to read the paper to understand the full scope of the problem and especially the parts I discussed here on the authors' approach to solving the problem.
+
+[^1]: Ramesh Raskar, Amit Agrawal, and Jack Tumblin. 2006. Coded exposure photography: motion deblurring using fluttered shutter. In ACM SIGGRAPH 2006 Papers (SIGGRAPH '06). Association for Computing Machinery, New York, NY, USA, 795–804. https://doi.org/10.1145/1179352.1141957
