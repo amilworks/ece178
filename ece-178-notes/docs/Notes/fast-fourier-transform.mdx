@@ -40,7 +40,27 @@ The algorithm, along with its recursive application, was invented by Carl Friedr
 
 The data flow diagram above[^1] shows the computation of the DFT of a sequence of length $N=8$ using the Radix-2 Decimation-In-Time (DIT) FFT algorithm. The diagram illustrates the divide-and-conquer approach of the algorithm, where the input sequence is divided into two smaller sequences, and their DFTs are computed recursively. The diagram also shows the "butterfly" operations, which combine the DFTs of the smaller sequences to form the DFT of the original sequence.
 
-The 8-point DFT can be written as a matrix product[^2], where we let $W = e^{-i2\pi/8} = (1 - i)/\sqrt{2}$:
+
+
+### Understanding the $8^{th}$ Root ($W$)
+
+The $8^{th}$ root of unity, denoted as $W$, is fundamental to the FFT algorithm. It's defined as $W = e^{-i2\pi/8}$, where $i$ is the imaginary unit. This root of unity represents the complex numbers on the unit circle in the complex plane, equidistantly spaced at angles corresponding to their fractional part of a full circle (in this case, $2\pi/8$, or $\pi/4$, radians apart).
+
+For $N=8$, we have:
+- $W^0 = e^{0} = 1$
+- $W^1 = e^{-i\pi/4} = \frac{1 - i}{\sqrt{2}}$
+- $W^2 = e^{-i\pi/2} = -i$
+- $W^3 = e^{-3i\pi/4} = \frac{-1 - i}{\sqrt{2}}$
+- $W^4 = e^{-i\pi} = -1$
+- $W^5 = e^{-5i\pi/4} = \frac{-1 + i}{\sqrt{2}}$
+- $W^6 = e^{-3i\pi/2} = i$
+- $W^7 = e^{-7i\pi/4} = \frac{1 + i}{\sqrt{2}}$
+
+These values of $W^k$ illustrate the symmetry and periodicity inherent in the DFT and are critical for the "butterfly" calculations in the FFT algorithm.
+
+###  Matrix Representation
+
+The DFT matrix for $N=8$, incorporating the simplified $W^k$ values, provides a clear visualization of the FFT's operation:
 
 $$
 \begin{align*}
@@ -57,13 +77,13 @@ A_7 \\
 &=
 \begin{bmatrix}
 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 \\
-1 & W^1 & W^2 & W^3 & W^4 & W^5 & W^6 & W^7 \\
+1 & W & W^2 & W^3 & W^4 & W^5 & W^6 & W^7 \\
 1 & W^2 & W^4 & W^6 & 1 & W^2 & W^4 & W^6 \\
-1 & W^3 & W^6 & W^1 & 1 & W^3 & W^6 & W^1 \\
-1 & W^4 & 1 & W^5 & 1 & W^4 & 1 & W^5 \\
-1 & W^5 & W^2 & W^7 & 1 & W^5 & W^2 & W^7 \\
+1 & W^3 & W^6 & W^1 & W^4 & W^7 & W^2 & W^5 \\
+1 & W^4 & 1 & W^4 & 1 & W^4 & 1 & W^4 \\
+1 & W^5 & W^2 & W^7 & W^4 & W & W^6 & W^3 \\
 1 & W^6 & W^4 & W^2 & 1 & W^6 & W^4 & W^2 \\
-1 & W^7 & W^6 & W^1 & 1 & W^7 & W^6 & W^1 \\
+1 & W^7 & W^6 & W^5 & W^4 & W^3 & W^2 & W \\
 \end{bmatrix}
 \begin{bmatrix}
 x_0 \\
@@ -77,6 +97,25 @@ x_7 \\
 \end{bmatrix}
 \end{align*}
 $$
+
+This representation, with the explicit inclusion of $W^k$ values, elucidates the FFT's efficiency in decomposing the DFT into smaller, manageable components.
+
+### Butterfly Operations Explained
+
+Butterfly operations are the core computational elements of the FFT algorithm. They represent the pairwise combination of DFT outputs from smaller sequences. A "butterfly" operation takes two complex numbers, multiplies one of them by a twiddle factor (a power of $W$), and then performs addition and subtraction to produce two new complex numbers.
+
+For a single stage in an $N=8$ FFT, a butterfly operation on inputs $a$ and $b$ with a twiddle factor $W^k$ can be represented as:
+
+- Output 1: $a + W^k \cdot b$
+- Output 2: $a - W^k \cdot b$
+
+These operations halve the computation required at each stage by reusing results, demonstrating the FFT's divide-and-conquer strategy. The recursive application of butterfly operations across the stages of the FFT leads to its $\mathcal{O}[N\log N]$ complexity, a significant improvement over the $\mathcal{O}[N^2]$ complexity of the direct DFT computation.
+
+
+
+
+
+
 
 
 #### Pseudocode
