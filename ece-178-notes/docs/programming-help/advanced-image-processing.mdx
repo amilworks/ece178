@@ -1,0 +1,221 @@
+# Advanced Image Processing 
+
+
+## Image Processing with Scipy and Numpy
+
+`scipy` extends `numpy`'s capabilities, providing a wide range of image processing functions, including filtering, morphology, and feature extraction.
+
+### Filtering with scipy
+
+Filters are used to enhance or suppress details in an image. `scipy` offers functions for various filters:
+
+```python
+from scipy.ndimage import gaussian_filter
+
+# Apply a Gaussian blur to the image
+blurred = gaussian_filter(grayscale, sigma=2)
+plt.imshow(blurred, cmap='gray')
+plt.show()
+```
+
+### Edge Detection
+
+Edge detection is a fundamental task in image processing, used to identify significant transitions in intensity. `scipy` can perform edge detection using the Sobel filter:
+
+```python
+from scipy.ndimage import sobel
+
+# Apply Sobel filter to detect edges
+sx = sobel(grayscale, axis=0, mode='constant')
+sy = sobel(grayscale, axis=1, mode='constant')
+edges = np.hypot(sx, sy)
+plt.imshow(edges, cmap='gray')
+plt.show()
+```
+
+
+
+### Image Segmentation with K-means Clustering
+
+Image segmentation partitions an image into multiple segments or pixels sets to simplify its representation. K-means clustering is a popular method for segmentation due to its simplicity and efficiency.
+
+```python
+from sklearn.cluster import KMeans
+import numpy as np
+import matplotlib.pyplot as plt
+
+def segment_image(image, n_clusters=3):
+    # Flatten the image
+    pixels = image.reshape((-1, 3))
+    
+    # Apply K-means clustering
+    kmeans = KMeans(n_clusters=n_clusters, random_state=0).fit(pixels)
+    segmented_img = kmeans.cluster_centers_[kmeans.labels_]
+    
+    # Reshape back to the original image shape
+    segmented_img = segmented_img.reshape(image.shape)
+    return segmented_img
+
+# Load and segment the image
+image = plt.imread('path/to/image.jpg')
+segmented_image = segment_image(image, n_clusters=3)
+
+# Display the original and segmented image
+fig, ax = plt.subplots(1, 2, figsize=(10, 5))
+ax[0].imshow(image)
+ax[0].set_title('Original Image')
+ax[0].axis('off')
+
+ax[1].imshow(segmented_image.astype('uint8'))
+ax[1].set_title('Segmented Image')
+ax[1].axis('off')
+
+plt.show()
+```
+
+### Morphological Operations
+
+Morphological operations process images based on shapes. They apply a structuring element to an input image, creating an output image of the same size.
+
+```python
+from scipy.ndimage import binary_opening, generate_binary_structure
+
+# Apply morphological opening to remove small objects from the image
+struct = generate_binary_structure(2, 1)  # 2D structuring element
+opened_image = binary_opening(edges, structure=struct).astype(np.int)
+
+# Display the result
+plt.imshow(opened_image, cmap='gray')
+plt.title('Morphological Opening')
+plt.axis('off')
+plt.show()
+```
+
+## Fourier Transform 
+
+The Fourier Transform is used in image processing for frequency analysis, filtering, and even image compression and restoration.
+
+```python
+from scipy.fft import fft2, fftshift
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Compute the 2D Fourier Transform of the image
+f_transform = fft2(grayscale)
+f_shifted = fftshift(f_transform)  # Shift the zero frequency component to the center
+magnitude_spectrum = 20 * np.log(np.abs(f_shifted))
+
+# Display the magnitude spectrum
+plt.imshow(magnitude_spectrum, cmap='gray')
+plt.title('Magnitude Spectrum')
+plt.axis('off')
+plt.show()
+```
+
+### Low-Pass Filtering using Fourier Transform
+
+Low-pass filtering allows only the low-frequency components of an image to pass through and can be used for blurring and noise reduction.
+
+```python
+from scipy.fft import fft2, ifft2, fftshift, ifftshift
+import numpy as np
+import matplotlib.pyplot as plt
+
+def low_pass_filter(image, cutoff_frequency):
+    # Compute the 2D Fourier Transform
+    f_transform = fft2(image)
+    f_shifted = fftshift(f_transform)
+    
+    # Create a mask with high value (1) at low frequency and low value (0) at high frequency
+    rows, cols = image.shape
+    crow, ccol = rows // 2, cols // 2
+    mask = np.zeros((rows, cols), np.uint8)
+    mask[crow - cutoff_frequency: crow + cutoff_frequency, ccol - cutoff_frequency: ccol + cutoff_frequency] = 1
+    
+    # Apply mask and inverse DFT
+    f_shifted_filtered = f_shifted * mask
+    f_inverse_shifted = ifftshift(f_shifted_filtered)
+    img_filtered = ifft2(f_inverse_shifted)
+    img_filtered = np.abs(img_filtered)
+    
+    return img_filtered
+
+# Example usage
+grayscale = plt.imread('path/to/grayscale/image.png')
+filtered_image = low_pass_filter(grayscale, cutoff_frequency=30)
+
+plt.figure(figsize=(10,5))
+plt.subplot(121), plt.imshow(grayscale, cmap='gray'), plt.title('Original')
+plt.subplot(122), plt.imshow(filtered_image, cmap='gray'), plt.title('Low-Pass Filtered')
+plt.show()
+```
+
+### High-Pass Filtering for Edge Detection
+
+High-pass filtering enhances or detects high-frequency components in an image, useful for edge detection and sharpening.
+
+```python
+def high_pass_filter(image, cutoff_frequency):
+    # Compute the 2D Fourier Transform
+    f_transform = fft2(image)
+    f_shifted = fftshift(f_transform)
+    
+    # Create a mask with low value (0) at low frequency and high value (1) at high frequency
+    rows, cols = image.shape
+    crow, ccol = rows // 2, cols // 2
+    mask = np.ones((rows, cols), np.uint8)
+    mask[crow - cutoff_frequency: crow + cutoff_frequency, ccol - cutoff_frequency: ccol + cutoff_frequency] = 0
+    
+    # Apply mask and inverse DFT
+    f_shifted_filtered = f_shifted * mask
+    f_inverse_shifted = ifftshift(f_shifted_filtered)
+    img_filtered = ifft2(f_inverse_shifted)
+    img_filtered = np.abs(img_filtered)
+    
+    return img_filtered
+
+# Example usage
+filtered_image = high_pass_filter(grayscale, cutoff_frequency=30)
+
+plt.figure(figsize=(10,5))
+plt.subplot(121), plt.imshow(grayscale, cmap='gray'), plt.title('Original')
+plt.subplot(122), plt.imshow(filtered_image, cmap='gray'), plt.title('High-Pass Filtered')
+plt.show()
+```
+
+### Band-Pass Filtering
+
+Band-pass filtering allows frequencies within a certain range to pass through, which can be useful for isolating specific features or frequency ranges in an image.
+
+```python
+def band_pass_filter(image, low_cutoff, high_cutoff):
+    # Compute the 2D Fourier Transform
+    f_transform = fft2(image)
+    f_shifted = fftshift(f_transform)
+    
+    # Create a band-pass mask
+    rows, cols = image.shape
+    crow, ccol = rows // 2, cols // 2
+    mask = np.zeros((rows, cols), np.uint8)
+    mask[crow - high_cutoff: crow + high_cutoff, ccol - high_cutoff: ccol + high_cutoff] = 1
+    mask[crow - low_cutoff: crow + low_cutoff, ccol - low_cutoff: ccol + low_cutoff] = 0
+    
+    # Apply mask and inverse DFT
+    f_shifted_filtered = f_shifted * mask
+    f_inverse_shifted = ifftshift(f_shifted_filtered)
+    img_filtered = ifft2(f_inverse_shifted)
+    img_filtered = np.abs(img_filtered)
+    
+    return img_filtered
+
+# Example usage
+filtered_image = band_pass_filter(grayscale, low_cutoff=10, high_cutoff=50)
+
+plt.figure(figsize=(10,5))
+plt.subplot(121), plt.imshow(grayscale, cmap='gray'), plt.title('Original')
+plt.subplot(122), plt.imshow(filtered_image, cmap='gray'), plt.title('Band-Pass Filtered')
+plt.show()
+```
+
+
+
