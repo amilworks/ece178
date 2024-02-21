@@ -86,7 +86,7 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       // Replace with your project's social card
-      image: 'img/docusaurus-social-card.jpg',
+      image: 'img/social-card-ece178-amil.jpeg',
       navbar: {
         title: 'ECE 178 Notes',
         logo: {
