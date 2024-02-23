@@ -1,0 +1,182 @@
+---
+sidebar_position: 7
+---
+
+# Sampling and Reconstruction
+
+## Introduction to Sampling and Reconstruction
+
+Sampling and reconstruction are fundamental concepts in communications and signal processing (my PhD emphasis in the ECE department). 
+
+**Sampling** refers to the process of converting a continuous-time signal into a discrete-time signal by capturing its values at regular intervals. **Reconstruction**, on the other hand, involves converting a discrete-time signal back into a continuous-time signal. These processes are essential for **converting analog signals into digital form** and vice versa, enabling the representation, transmission, and processing of signals using digital systems.
+
+
+## Sampling of analog signals in 1D
+
+
+### Sampling by Dirac delta multiplication
+
+$$
+x_s(t) = x(t) \cdot \sum_{n=-\infty}^{\infty} \delta(t - nT)
+$$
+
+where $x(t)$ is the original analog signal, $x_s(t)$ is the sampled signal, and $T$ is the sampling period. The Dirac delta function $\delta(t - nT)$ acts as a sampling gate, capturing the value of the signal at regular intervals of $T$.
+
+### Sampling in the Fourier Domain
+
+The Fourier transform of the sampled signal is given by:
+
+$$
+X_s(f) = X(f) * \sum_{n=-\infty}^{\infty} \delta(f - n/T)
+$$
+
+where $X(f)$ is the Fourier transform of the original signal, and $X_s(f)$ is the Fourier transform of the sampled signal. The convolution of $X(f)$ with the Dirac comb function $\sum_{n=-\infty}^{\infty} \delta(f - n/T)$ results in the replication of the original spectrum at intervals of $1/T$ in the frequency domain.
+
+### Shannon's Sampling Theorem (1949)
+
+A function $x(t)$, band-limited to $B$ Hz, can be reconstructed exactly from its equidistant samples, provided that the sampling step is $T< \frac{\pi}{B}$.
+
+Specifically, 
+
+$$
+x(t) = \sum_{n=-\infty}^{\infty} x(nT) \cdot \text{sinc}\left(\frac{t - nT}{T}\right)
+$$
+
+where $\text{sinc}(x) = \frac{\sin(\pi x)}{\pi x}$ is the sinc function.
+
+The interpretation as a convolution is:
+
+$$
+x(t) = x_s(t) * \text{sinc}(\dfrac{t}{T})
+$$
+
+where $x_s(t)$ is the sampled signal.
+
+
+Shannon's sampling theorem, also known as the **Nyquist-Shannon sampling theorem**, provides a fundamental guideline for sampling continuous-time signals. The theorem states that a continuous-time signal $x(t)$ can be perfectly reconstructed from its samples if the sampling rate is at least twice the bandwidth of the signal. Mathematically, the sampling theorem can be expressed as:
+
+$$
+f_s \geq 2B
+$$
+
+where $f_s$ is the sampling frequency and $B$ is the bandwidth of the signal. The **bandwidth of a signal** is the range of frequencies that the signal contains. The sampling theorem ensures that no information is lost during the sampling process, allowing for accurate reconstruction of the original signal from its samples.
+
+
+## Aliasing and Anti-Aliasing
+
+### Spectral Replication, Aliasing
+Convolving a comb function with the original spectrum results in the replication of the original spectrum at intervals of $1/T$ in the frequency domain. This phenomenon is known as **spectral replication** or **aliasing**. The replicated spectra can overlap with each other, leading to a phenomenon called **aliasing**. Aliasing can cause distortion and loss of information in the reconstructed signal, making it essential to avoid undersampling and ensure that the sampling theorem is satisfied.
+
+### Avoid Aliasing
+
+You can apply a pre-filter (ideal low-pass) to the original signal to remove the spectral replicas before sampling. This process is known as **anti-aliasing**. The anti-aliasing filter removes the high-frequency components from the signal, ensuring that the sampled signal does not contain spectral replicas that can cause aliasing. 
+
+
+
+
+### Temporal and Spatial Aliasing
+
+Aliasing is not limited to the frequency domain and can occur in the spatial domain as well. In the context of images, **temporal aliasing** refers to the distortion of moving objects in video frames, while **spatial aliasing** occurs when the resolution of an image is insufficient to represent fine details accurately. Both types of aliasing can be mitigated using anti-aliasing techniques, such as low-pass filtering and downsampling.
+
+### The Wagon Wheel Effect
+
+The wagon wheel effect is a classic example of temporal aliasing that occurs in movies and videos. When a spoked wheel rotates at a certain speed, it may appear to rotate in the opposite direction or stand still due to the frame rate of the camera. This phenomenon is a result of temporal aliasing and can be mitigated by increasing the frame rate or adjusting the shutter speed of the camera.
+
+### Nyquist frequency
+
+The Nyquist frequency is defined as half the sampling frequency and represents the maximum frequency that can be accurately represented in the sampled signal. Frequencies above the Nyquist frequency can cause aliasing and distortion in the reconstructed signal. Therefore, it is essential to ensure that the Nyquist frequency is greater than the highest frequency component of the original signal to avoid aliasing.
+
+$$
+f_N = \frac{f_s}{2}
+$$
+
+where $f_N$ is the Nyquist frequency and $f_s$ is the sampling frequency.
+
+So for the wagon wheel effect, let's say that 1 revolution takes 180 ms. Then, the frequency is $f = \frac{1}{T} = \frac{1}{0.18} = 5.56 Hz$. If the frame rate is 24 fps, then the Nyquist frequency is $f_N = \frac{24}{2} = 12 Hz$. The wheel frequency is less than the Nyquist frequency, so the wheel should appear to rotate in the correct direction.
+
+If the wheel has 6 spokes, then the wheel frequency is $f = 6 \times 5.56 = 33.33 Hz$, which is greater than the Nyquist frequency. The wheel will appear to rotate in the opposite direction. So the minimal acquisition frequency to avoid aliasing is $f_s = 2 \times 33.33 = 66.66 Hz$.
+
+
+To combat spatial aliasing, the image resolution can be increased, or anti-aliasing filters can be applied to remove high-frequency components before downsampling. Hence, the solution is to use a low-pass pre-filter to remove the high-frequency components before downsampling.
+
+## 2D Sampling and Conditions for Perfect Recovery
+
+### Introduction to 2D Sampling
+
+We are now interested in converting a continuous two-dimensional (2D) signal into a discrete set of samples. This process is crucial for storing, processing, and analyzing images digitally.
+
+### Notation and 2D Sampling Function
+
+So I am switching to a kind of more intuitive notation for images and sampling operations. Let $I(x, y)$ represent the continuous 2D signal, where $x$ and $y$ are spatial coordinates in the horizontal and vertical directions, respectively. The sampled 2D signal, $I_s[m, n]$, can then be defined as follows:
+
+$$
+I_s[m, n] = I(x, y) \cdot \sum_{p=-\infty}^{\infty} \sum_{q=-\infty}^{\infty} \delta(x - pM, y - qN)
+$$
+
+Here, $I_s[m, n]$ represents the discrete samples of the original continuous signal $I(x, y)$. The parameters $M$ and $N$ denote the sampling intervals along the $x$ and $y$ axes, respectively, and $\delta$ represents the Dirac delta function, which isolates individual samples at intervals of $M$ and $N$.
+
+### Separability of the 2D Sampling Function
+
+The 2D sampling process is inherently separable, implying that the 2D sampling operation can be decomposed into two independent one-dimensional (1D) sampling processes along each axis. This separability is mathematically represented by the outer product of two 1D sampling functions, simplifying both the conceptual understanding and computational implementation of 2D sampling.
+
+### Condition for Perfect Recovery (The Nyquist-Shannon Sampling Theorem)
+
+For a 2D signal to be perfectly recoverable from its sampled version, it must satisfy the Nyquist-Shannon sampling theorem in both dimensions. This theorem states that a continuous signal can be completely reconstructed from its samples if it is band-limited and the sampling frequency is greater than twice the highest frequency present in the signal (the Nyquist rate).
+
+Mathematically, if $f_x$ and $f_y$ are the highest frequencies in the $x$ and $y$ directions, respectively, the conditions for perfect recovery are:
+
+$$
+M \leq \frac{1}{2f_x} \quad \text{and} \quad N \leq \frac{1}{2f_y}
+$$
+
+Where $M$ and $N$ are the sampling intervals in the $x$ and $y$ directions, respectively. When these conditions are met, the original continuous signal $I(x, y)$ can be perfectly reconstructed from its sampled version $I_s[m, n]$ without any loss of information.
+
+
+---
+
+
+
+
+## **Homework.** Implementing Downsampling Methods to Observe Aliasing
+
+#### Introduction to Downsampling and Aliasing
+
+Downsampling is a process used to reduce the spatial resolution of an image by decreasing the number of pixels. This technique is widely used in image processing for various applications, including image compression and resizing. However, downsampling can introduce an undesired artifact known as aliasing. Aliasing occurs when high-frequency components in the image are improperly represented at a lower resolution, leading to visual distortions.
+
+To mitigate the effects of aliasing, anti-aliasing methods such as filtering can be applied before downsampling. Filtering helps remove high-frequency content from the image, thereby reducing the likelihood of aliasing artifacts.
+
+#### Implementing `myDownSampling` Function
+
+The `myDownSampling` function is a custom implementation to perform downsampling on an input image. This function requires the following parameters:
+
+- `image`: The input image to be downsampled.
+- `downsampling_rate`: The rate at which the image should be downsampled.
+- `anti_aliasing_method`: A string indicating the anti-aliasing method to be applied. The options include 'No anti-aliasing', 'Box filter', and 'Gaussian'.
+
+The function should return the downsampled image.
+
+#### Downsampling Methods
+
+1. **No Anti-Aliasing**: This method performs direct downsampling without any preprocessing to remove high-frequency components. While simplest, it is most prone to aliasing artifacts.
+
+2. **Box Filter Anti-Aliasing**: Before downsampling, the image is convolved with a box filter. The box filter, also known as an averaging filter, replaces each pixel value with the average of its neighbors. This process smooths the image, effectively reducing high-frequency content.
+
+3. **Gaussian Anti-Aliasing**: This method involves convolving the image with a Gaussian filter before downsampling. The Gaussian filter applies a weighted average to each pixel, with weights decreasing with distance from the center pixel. This results in a smoother and more natural reduction of high frequencies compared to the box filter.
+
+#### Implementation Details
+
+- **Nearest Neighbor Downsampling**: For all methods, downsampling can be performed using the nearest neighbor approach, where the output pixel is assigned the value of the closest pixel in the input image based on the downsampling rate.
+
+- **Filter Convolution**: For box filter and Gaussian anti-aliasing methods, convolution operations must be implemented manually, as the use of built-in functions like `conv2` and `fspecial` is restricted. Convolution involves sliding the filter over the image and computing the sum of element-wise multiplications at each position.
+
+- **Filter Design**:
+    - The box filter can be designed as a matrix of ones normalized by the filter's area, ensuring that the sum of the filter coefficients is 1.
+    - The Gaussian filter requires calculating the Gaussian function values based on the desired standard deviation, ensuring the filter coefficients are normalized.
+
+#### Observing Aliasing Effects
+
+After implementing the `myDownSampling` function with the specified anti-aliasing methods, you are encouraged to experiment with different downsampling rates and observe the aliasing effects. Comparing the results of different anti-aliasing methods provides insight into their effectiveness in preserving image quality during downsampling.
+
+#### Why should you care 
+
+Understanding and implementing different downsampling methods, along with anti-aliasing techniques, are fundamental skills in digital image processing. These techniques demonstrate the trade-offs between reducing image resolution and preserving image quality, highlighting the importance of proper anti-aliasing methods in mitigating aliasing artifacts.
