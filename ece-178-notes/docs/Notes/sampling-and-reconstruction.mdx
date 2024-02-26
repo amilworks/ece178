@@ -172,7 +172,7 @@ The function should return the downsampled image.
 - **Filter Design**:
     - The box filter can be designed as a matrix of ones normalized by the filter's area, ensuring that the sum of the filter coefficients is 1.
     - The Gaussian filter requires calculating the Gaussian function values based on the desired standard deviation, ensuring the filter coefficients are normalized.
-    
+
 
 #### Observing Aliasing Effects
 
@@ -181,3 +181,39 @@ After implementing the `myDownSampling` function with the specified anti-aliasin
 #### Why should you care 
 
 Understanding and implementing different downsampling methods, along with anti-aliasing techniques, are fundamental skills in digital image processing. These techniques demonstrate the trade-offs between reducing image resolution and preserving image quality, highlighting the importance of proper anti-aliasing methods in mitigating aliasing artifacts.
+
+
+
+
+
+
+
+
+## Quiz 
+
+### Understanding Aliasing with the Wagon Wheel Effect
+
+#### Question
+
+ Consider a wagon wheel rotating at a rate such that it completes one full revolution every 100 milliseconds. If a camera captures this wheel at a frame rate of 30 frames per second (fps), will the wheel appear to rotate in the correct direction, in the opposite direction, or appear stationary due to aliasing?
+
+
+#### Explanation
+
+ The frequency of the wagon wheel's rotation can be calculated as $f = \frac{1}{T} = \frac{1}{0.1} = 10 \,Hz$, where $T = 0.1 \,s$ is the time it takes for one revolution. Given that the camera's frame rate is 30 fps, the Nyquist frequency is $f_N = \frac{f_s}{2} = \frac{30}{2} = 15 \,Hz$. Since the wheel's rotation frequency $f = 10 \,Hz$ is less than the Nyquist frequency $f_N = 15 \,Hz$, the wheel should appear to rotate in the correct direction in the captured video, as the sampling frequency is sufficient to accurately capture the wheel's motion without aliasing.
+
+#### Follow-up Question
+
+ If the wheel has 8 spokes, and each spoke is considered to contribute to the effective rotation frequency seen by the camera, what is the minimal acquisition frame rate required to avoid the aliasing effect?
+
+
+#### Explanation
+
+ With 8 spokes, the effective frequency seen by the camera becomes $f_{\text{effective}} = 8 \times 10 \,Hz = 80 \,Hz$, as each spoke passing in front of the camera can be considered an event contributing to the observed frequency. To avoid aliasing, the sampling frequency ($f_s$) must be at least twice the highest frequency component, according to the Nyquist theorem. Therefore, $f_s \geq 2 \times 80 = 160 \,Hz$, which corresponds to a frame rate of $160 \,fps$. 
+
+
+
+import SubsamplingVisualization from '/src/components/HomepageFeatures/SubsamplingVisualization';
+
+
+<SubsamplingVisualization />
