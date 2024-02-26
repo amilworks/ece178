@@ -32,6 +32,22 @@ $$
 
 where $X(f)$ is the Fourier transform of the original signal, and $X_s(f)$ is the Fourier transform of the sampled signal. The convolution of $X(f)$ with the Dirac comb function $\sum_{n=-\infty}^{\infty} \delta(f - n/T)$ results in the replication of the original spectrum at intervals of $1/T$ in the frequency domain.
 
+import SubsamplingVisualization from '/src/components/HomepageFeatures/SubsamplingVisualization';
+
+### Visualization of Sampling in the Frequency Domain
+
+### How this works
+
+- A sinusoidal function, $y = \sin(2\pi x)$, is used to generate the signal data.
+- The `drawSubsampled` function (Check it out on GitHub if you are interested) generates data points for the signal based on the subsampling rate provided by the you the user through the slider. It then draws (or redraws) the line representing the subsampled signal.
+- The slider input event triggers the `drawSubsampled` function, updating the visualization based on the selected subsampling rate.
+
+This basic example demonstrates the effect of subsampling on a signal and how decreasing the sampling rate can lead to aliasing, visually represented by changes in the signal's appearance. Experiment with different rates to see how undersampling distorts the original sinusoidal shape. Sorry if this isn't the most beautiful graphic, I kind of suck at D3.js, well actually all things JavaScript.
+
+
+
+<SubsamplingVisualization />
+
 ### Shannon's Sampling Theorem (1949)
 
 A function $x(t)$, band-limited to $B$ Hz, can be reconstructed exactly from its equidistant samples, provided that the sampling step is $T< \frac{\pi}{B}$.
@@ -137,15 +153,15 @@ Where $M$ and $N$ are the sampling intervals in the $x$ and $y$ directions, resp
 
 
 
-## **Homework.** Implementing Downsampling Methods to Observe Aliasing
+## **Homework.** Assignment Details
 
-#### Introduction to Downsampling and Aliasing
+### Introduction to Downsampling and Aliasing
 
 Downsampling is a process used to reduce the spatial resolution of an image by decreasing the number of pixels. This technique is widely used in image processing for various applications, including image compression and resizing. However, downsampling can introduce an undesired artifact known as aliasing. Aliasing occurs when high-frequency components in the image are improperly represented at a lower resolution, leading to visual distortions.
 
 To mitigate the effects of aliasing, anti-aliasing methods such as filtering can be applied before downsampling. Filtering helps remove high-frequency content from the image, thereby reducing the likelihood of aliasing artifacts.
 
-#### Implementing `myDownSampling` Function
+### Implementing `myDownSampling` Function
 
 The `myDownSampling` function is a custom implementation to perform downsampling on an input image. This function requires the following parameters:
 
@@ -155,7 +171,7 @@ The `myDownSampling` function is a custom implementation to perform downsampling
 
 The function should return the downsampled image.
 
-#### Downsampling Methods
+### Downsampling Methods
 
 1. **No Anti-Aliasing**: This method performs direct downsampling without any preprocessing to remove high-frequency components. While simplest, it is most prone to aliasing artifacts.
 
@@ -163,7 +179,7 @@ The function should return the downsampled image.
 
 3. **Gaussian Anti-Aliasing**: This method involves convolving the image with a Gaussian filter before downsampling. The Gaussian filter applies a weighted average to each pixel, with weights decreasing with distance from the center pixel. This results in a smoother and more natural reduction of high frequencies compared to the box filter.
 
-#### Implementation Details
+### Implementation Details
 
 - **Nearest Neighbor Downsampling**: For all methods, downsampling can be performed using the nearest neighbor approach, where the output pixel is assigned the value of the closest pixel in the input image based on the downsampling rate.
 
@@ -173,19 +189,148 @@ The function should return the downsampled image.
     - The box filter can be designed as a matrix of ones normalized by the filter's area, ensuring that the sum of the filter coefficients is 1.
     - The Gaussian filter requires calculating the Gaussian function values based on the desired standard deviation, ensuring the filter coefficients are normalized.
 
+Don't worry, I will discuss more below.
 
-#### Observing Aliasing Effects
+
+### Observing Aliasing Effects
 
 After implementing the `myDownSampling` function with the specified anti-aliasing methods, you are encouraged to experiment with different downsampling rates and observe the aliasing effects. Comparing the results of different anti-aliasing methods provides insight into their effectiveness in preserving image quality during downsampling.
 
-#### Why should you care 
 
-Understanding and implementing different downsampling methods, along with anti-aliasing techniques, are fundamental skills in digital image processing. These techniques demonstrate the trade-offs between reducing image resolution and preserving image quality, highlighting the importance of proper anti-aliasing methods in mitigating aliasing artifacts.
+## **Implementation.** So yeah, let's conquer this aliasing thing...
+
+### Step 1: Create the Gaussian Kernel
+
+The Gaussian kernel is defined by the formula:
+
+$$
+G(x, y) = \frac{1}{2\pi\sigma^2}e^{-\frac{x^2 + y^2}{2\sigma^2}}
+$$
+
+where $ \sigma $ is the standard deviation of the distribution, and $x$ and $y$ are distances from the kernel's center.
+
+:::tip
+If you know Python well, then check out the implementation of the `scipy.ndimage.gaussian_filter` function. It is a good example of how to implement a Gaussian filter in Python. Same with the `scipy.ndimage.convolve` function. This is one of those *standing on the shoulders of giants* learning experiences us programmers need to do more often.
+:::
+
+### Step 2: Convolve the Image with the Gaussian Kernel
+
+As you already know at this point, **Convolution** involves sliding the kernel over the image and computing the sum of element-wise multiplications at each position.
+
+Here's how you can implement these steps in Python using NumPy:
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+def gaussian_kernel(size, sigma=1):
+    """Generates a 2D Gaussian kernel."""
+    size = int(size) // 2
+    x, y = np.mgrid[-size:size+1, -size:size+1]
+    normal = 1 / (2.0 * np.pi * sigma**2)
+    g = np.exp(-((x**2 + y**2) / (2.0*sigma**2))) * normal
+    return g
+
+def convolve(image, kernel):
+    """Convolves an image with a kernel."""
+    kernel_height, kernel_width = kernel.shape
+    image_height, image_width = image.shape
+    
+    # Calculate the padding size
+    pad_height = kernel_height // 2
+    pad_width = kernel_width // 2
+    
+    # Pad the image
+    padded_image = np.pad(image, ((pad_height, pad_height), (pad_width, pad_width)), mode='constant', constant_values=0)
+    
+    # Prepare the output array
+    output = np.zeros_like(image)
+    
+    # Perform the convolution
+    for x in range(image_height):
+        for y in range(image_width):
+            # Element-wise multiplication and sum
+            output[x, y] = np.sum(kernel * padded_image[x:x+kernel_height, y:y+kernel_width])
+    
+    return output
+
+def gaussian_filter(image, kernel_size=5, sigma=1):
+    """Applies a Gaussian filter to an image."""
+    kernel = gaussian_kernel(kernel_size, sigma)
+    return convolve(image, kernel)
+
+# Example usage
+image = plt.imread('path_to_your_image.png')  # Ensure this is grayscale
+blurred_image = gaussian_filter(image, kernel_size=5, sigma=1)
+
+plt.figure(figsize=(10, 5))
+plt.subplot(1, 2, 1), plt.imshow(image, cmap='gray'), plt.title('Original')
+plt.subplot(1, 2, 2), plt.imshow(blurred_image, cmap='gray'), plt.title('Blurred with Gaussian Filter')
+plt.show()
+```
+
+#### Explanation
+
+- **Gaussian Kernel Generation**: The `gaussian_kernel` function creates a 2D Gaussian kernel based on the specified size and $ \sigma $. The kernel weights decrease with distance from the center, following the Gaussian distribution.
+
+- **Convolution Function**: The `convolve` function slides the Gaussian kernel over the image, applying the Gaussian smoothing effect. This function manually implements the convolution process, highlighting the computational steps involved in filtering.
+
+- **Gaussian Filter Application**: The `gaussian_filter` function combines the kernel generation and convolution steps to apply Gaussian smoothing to an input image.
+
+- **Box Filter** The box_filter function is a simple implementation of an averaging (box) filter that you can use for anti-aliasing. It creates a uniform kernel and uses the convolve function to apply it to the image. I defined this in the next section.
 
 
 
+### Putting it all together
+
+Befoore we get into the whole implementation, let's draw attention to some important concepts we discussed in Friday's section.
 
 
+- **Aliasing in Images:** By downsampling without applying an anti-aliasing filter (`else statement`), high-frequency components that cannot be represented at the lower resolution may cause visual artifacts. This illustrates the concept of aliasing.
+
+- **Anti-Aliasing with Box Filter:**  By averaging nearby pixels before downsampling (`Box`), we reduce the high-frequency components that are prone to aliasing, thus mitigating its effects.
+
+- **Anti-Aliasing with Gaussian Filter:** Applying a Gaussian filter (`Gaussian`) smooths the image more naturally, as it weights pixels based on their distance, effectively reducing high-frequency content that leads to aliasing.
+
+```python
+import numpy as np
+
+def box_filter(image, kernel_size=5):
+    """Applies a box filter (average filter) to an image."""
+    kernel = np.ones((kernel_size, kernel_size)) / (kernel_size ** 2)
+    return convolve(image, kernel)
+
+
+def myDownSampling(image, downsampling_rate, anti_aliasing_method):
+    """
+    Downsample an image with optional anti-aliasing using custom filters.
+    
+    Args:
+    - image (numpy.ndarray): The input image to downsample.
+    - downsampling_rate (int): The rate at which to downsample the image.
+    - anti_aliasing_method (str): The anti-aliasing method to use ( 'Box', 'Gaussian').
+
+    Returns:
+    - numpy.ndarray: The downsampled image.
+    """
+    
+    if anti_aliasing_method == 'Box':
+        # Apply your implemented box filter
+        image_filtered = box_filter(image, kernel_size=5)
+    elif anti_aliasing_method == 'Gaussian':
+        # Apply your implemented Gaussian filter
+        image_filtered = gaussian_filter(image, kernel_size=5, sigma=1)
+    else:
+        # No anti-aliasing applied
+        image_filtered = image
+
+    # Perform nearest neighbor downsampling
+    downsampled_image = image_filtered[::downsampling_rate, ::downsampling_rate]
+    
+    return downsampled_image
+    ```
+
+So is this a complete and correct implementation for the `myDownSampling` function? Well, not quite. Because you need to implement this in `MATLAB` and I am unsure of the syntax and the functions you can use. This is also my implementation and I may have missed something. Read the assignment thoroughly and make sure you are aware of the parameters such as what function not to use. Nonetheless, I hope this gives you a good idea of how to implement the function in `MATLAB`? Maybe? I hope so.
 
 
 
@@ -213,7 +358,3 @@ Understanding and implementing different downsampling methods, along with anti-a
 
 
 
-import SubsamplingVisualization from '/src/components/HomepageFeatures/SubsamplingVisualization';
-
-
-<SubsamplingVisualization />
