@@ -1,5 +1,7 @@
 ---
 sidebar_position: 4
+toc_min_heading_level: 2
+toc_max_heading_level: 4
 ---
 
 # Discrete Fourier Transform (DFT)
@@ -7,6 +9,91 @@ sidebar_position: 4
 > The slower Discrete Fourier Transform (DFT) 
 
 ## Background
+
+### Frequency Domain vs Time Domain vs Spatial Domain
+
+Can we take a minute to discuss these because I was confused when I saw these for the first time. These concepts become really important as we traverse various topics in signal processing and image processing.
+
+
+
+
+#### Time Domain
+
+**Technical Definition**: The time domain provides a way to represent signals as they vary over time. It's a direct and intuitive representation where the signal's amplitude is plotted against time.
+
+**Real-life Application**: In audio processing, the time domain representation of a sound wave helps in understanding its amplitude variations over time. For example, visualizing a recording of a guitar string being plucked shows how the sound amplitude changes, allowing us to observe the loudness and decay of the note over time.
+
+**Code Illustration**:
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Generate a simulated sound wave of a guitar string being plucked
+t = np.linspace(0, 0.5, 500)  # Time from 0 to 0.5 seconds
+frequency = 440  # Frequency of A4 note in Hz
+amplitude = np.exp(-t)  # Exponential decay to simulate the pluck dying out
+signal = amplitude * np.sin(2 * np.pi * frequency * t)
+
+# Plot the time-domain representation
+plt.plot(t, signal)
+plt.title("Time Domain Representation of a Plucked Guitar String")
+plt.xlabel("Time (seconds)")
+plt.ylabel("Amplitude")
+plt.show()
+```
+
+#### Frequency Domain
+
+**Technical Definition**: The frequency domain represents signals as a function of frequency rather than time. It decomposes a signal into its constituent frequencies, showing how much of each frequency is present in the original signal.
+
+**Real-life Application**: Analyzing the frequency content of audio signals, like the sound of a guitar string, helps in identifying the pitch and harmonics. This is crucial in applications like music production, where understanding the spectral content can guide mixing and mastering processes.
+
+**Code Illustration**:
+```python
+from scipy.fft import fft
+
+# Compute the Fourier Transform to convert the signal to the frequency domain
+signal_fft = fft(signal)
+frequencies = np.linspace(0, len(signal) / (2 * t[-1]), len(signal_fft)//2)
+
+# Plot the frequency-domain representation
+plt.plot(frequencies, np.abs(signal_fft[:len(signal_fft)//2]))
+plt.title("Frequency Domain Representation of a Plucked Guitar String")
+plt.xlabel("Frequency (Hz)")
+plt.ylabel("Magnitude")
+plt.show()
+```
+
+#### Spatial Domain
+
+**Technical Definition**: The spatial domain refers to the representation of images or spatial data as a function of their position. Each pixel in an image can be viewed as a point in this domain, with its value representing intensity or color.
+
+**Real-life Application**: In image processing, operations in the spatial domain, such as filtering or edge detection, directly manipulate pixel values. This is essential for tasks like image enhancement, where improving the visibility of features or reducing noise is the goal.
+
+**Code Illustration**:
+```python
+import cv2
+
+# Load an image (as grayscale for simplicity)
+image = cv2.imread('path_to_image.jpg', cv2.IMREAD_GRAYSCALE)
+
+# Apply a spatial domain operation - edge detection using Sobel filter
+sobelx = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=3)  # Sobel Edge Detection on the X axis
+sobely = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=3)  # Sobel Edge Detection on the Y axis
+
+# Display the original and edge-detected images
+plt.figure(figsize=(10, 5))
+plt.subplot(1, 2, 1)
+plt.imshow(image, cmap='gray')
+plt.title("Original Image")
+plt.subplot(1, 2, 2)
+plt.imshow(np.sqrt(sobelx**2 + sobely**2), cmap='gray')  # Combine the two edges
+plt.title("Edge Detection in Spatial Domain")
+plt.show()
+```
+
+
+### Introduction to the Discrete Fourier Transform (DFT)
 
 The Discrete Fourier Transform (DFT) transforms a discrete signal from the time domain to the frequency domain. The DFT is used to analyze the frequency content of a signal. 
 
@@ -84,8 +171,68 @@ $$
 
 **QED** And this is the definition of the 2D DFT.
 
+---
+
+## Understanding Album Remastering Through the Frequency Domain
+
+This is actually a really cool application of what we are and will be learning in this course. Specifically, we will cover the math and major concepts behind this application, and maybe you can try this on your own one day?
+
+### What is Album Remastering?
+
+Remastering an album involves revisiting the original recordings and enhancing their sound quality for contemporary playback systems. This process can adjust levels, balance, and even remove unwanted noise, making the tracks clearer, richer, and more vibrant. In the context of the frequency domain, remastering can significantly alter and improve the spectral characteristics of the music.
+
+### Technical Details in the Frequency Domain
+
+1. **Enhancing Frequency Components**: Remastering often involves adjusting the frequency content of a recording. For instance, boosting low frequencies can add warmth to the sound, whereas enhancing high frequencies can increase clarity and presence.
+
+2. **Noise Reduction**: Old recordings often contain noise artifacts like hiss, hum, or crackles, predominantly present in specific frequency bands. Remastering uses frequency domain techniques[^1] to identify and reduce or remove these unwanted sounds without significantly affecting the music.
+
+3. **Dynamic Range Compression**: This technique adjusts the amplitude of various frequency components to reduce the dynamic range of the recording. The goal is to make softer sounds more audible and ensure that loud sounds do not overpower. This process is particularly relevant in the frequency domain, where different bands can be compressed to different extents.
+
+4. **Equalization (EQ)**: EQ involves boosting or attenuating specific frequency bands to balance the overall sound. It can help bring out certain instruments or vocals that may have been underrepresented in the original mix.
+
+### Sampling and Frequency Domain
+
+Remastering also considers the sampling rate and bit depth of the original recordings. Here, bit depth is defined as the number of bits of information in each sample, and the sampling rate is the number of samples taken per second. You might have seen that some songs have a bit depth of 16 bits and a sampling rate of 44.1 kHz. This means that each sample has 16 bits of information, and 44,100 samples are taken every second. 
+
+Increasing the sampling rate during the remastering process can allow for a more detailed representation of the frequency spectrum, especially for high-frequency components. Additionally, a higher bit depth increases the dynamic range, enabling finer gradation of sound levels.
+
+If I wanted to increase the quality of the 16-bit/44.1kHz song, I could increase the bit depth to 24 bits and the sampling rate to 96 kHz. This would make the song sound better, but it would also make the file size larger. So I think instead of the original file being 10 MB, the new file would be around 30 MB.
+
+### Pseudocode Steps for Remastering
+
+```plaintext
+1. Load the original recording
+   - Input: Original track
+   - Output: Digital audio waveform
+
+2. Convert to the frequency domain
+   - Use Fourier Transform to analyze the frequency components
+
+3. Apply noise reduction
+   - Identify frequency bands with noise artifacts
+   - Attenuate these bands to reduce noise
+
+4. Adjust dynamic range
+   - Compress the dynamic range of specific frequency bands to make the sound more consistent
+
+5. Equalize the track
+   - Boost or attenuate specific frequency bands to balance the overall sound
+
+6. Optionally increase sampling rate and bit depth
+   - Resample the audio to a higher sampling rate for better frequency representation
+   - Increase bit depth for greater dynamic range
+
+7. Convert back to the time domain
+   - Use Inverse Fourier Transform to convert the modified frequency domain data back to audio waveform
+
+8. Export the remastered track
+   - Output: Remastered digital audio file
+```
 
 
+
+## Exercises
 
 ### Problem 1
 
@@ -93,3 +240,6 @@ Using `Python`, solve the following problems:
 
 1. Compute the DFT of the sequence $f(n) = \sin(2\pi n/N)$ for $N = 8$.
 2. Compute the DFT of the sequence $f(n) = \sin(2\pi n/N)$ for $N = 16$. 
+
+
+[^1]: [Noise Reduction Algorithm](https://www.sciencedirect.com/topics/computer-science/noise-reduction-algorithm#:~:text=The%20main%20steps%20of%20the,introduced%20by%20the%20spectral%20subtraction.)
