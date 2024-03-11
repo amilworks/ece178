@@ -1,0 +1,333 @@
+# Patch Match
+> Some Very Terse Notes on the PatchMatch Randomized Correspondence Algorithm
+
+### What is PatchMatch
+
+At a high level, PatchMatch is an algorithm that efficiently finds approximate nearest neighbor matches between image patches. It leverages randomness to provide fast convergence and has applications which we will conquer in our homeworks, including inpainting, retargeting, and synthesis.
+
+### Definitions
+
+1. **Image Patch**: A small, contiguous region of an image, typically square, that captures local structure and texture. Patches are often used to represent and compare local image features.
+
+2. **Nearest Neighbor Field**: A mapping from each pixel in an image to its nearest neighbor in another image. In the context of PatchMatch, this mapping is between patches in two images.
+
+3. **Spatial Coherence**: The property of natural images where neighboring pixels or patches tend to have similar values. This property is exploited by PatchMatch to guide the search for nearest neighbors. Coherence is defined as:
+
+$$
+\text{Coherence} = \frac{\text{Similarity of neighboring patches}}{\text{Dissimilarity of non-neighboring patches}}
+$$
+
+
+
+#### Theoretical Foundations
+1. **Basic Premise**: PatchMatch iterates over image patches, using a random search to guess initial correspondences, then refines these guesses through propagation and random search steps. The algorithm exploits the coherence in natural images, where similar patches tend to cluster spatially. Viewing an image as a collection of overlapping patches introduces a local perspective to global image analysis. The algorithm's reliance on spatial coherence parallels signal processing concepts such as the Wiener filter (_might be my week 4 slides_), which also assumes neighboring values in a signal (or image) are correlated.
+
+2. **Search Space Reduction**: Traditional nearest neighbor search in high-dimensional spaces, as required for comparing image patches, suffers from the curse of dimensionality. PatchMatch mitigates this by focusing the search on likely candidates through a guided random search, leveraging spatial coherence.
+
+3. **Propagation Step**: Exploits the assumption that if a patch at location $(x, y)$ matches well with a patch at $(x', y')$, then neighboring patches are likely to find good matches in the vicinity of $(x', y')$. This local smoothness assumption allows for efficient propagation of good matches.
+
+4. **Random Search**: Complements the propagation step by randomly sampling the search space around the current best match, exponentially decreasing the search window's size. This step helps escape local minima and improves the chances of finding a global optimum.
+
+5. **Iterative Refinement**: The algorithm iteratively applies propagation and random search steps, rapidly converging to a good approximation of the nearest neighbor field. Each iteration refines the match quality, with significant improvements often seen within just a few iterations.
+
+:::tip Frequency Domain Analysis
+
+
+While PatchMatch operates in the spatial domain, its principles resonate with frequency domain methods like the Fourier Transform. Both approaches dissect the image into components (patches or frequency bands) to facilitate analysis and processing.
+:::
+
+#### Motivations, Applications, and Advantages
+1. **Image Inpainting**: PatchMatch's ability to find matching patches is crucial for inpainting, where missing or damaged parts of images are filled by borrowing information from similar patches elsewhere in the image.
+
+2. **Content-Aware Resizing**: By identifying and manipulating patches, PatchMatch facilitates content-aware resizing, allowing images to be resized without distorting key features.
+
+3. **Computational Efficiency**: The introduction of randomness for initial guess improvement, combined with local propagation, enables PatchMatch to achieve results quickly, making it suitable for interactive applications.
+
+
+
+---
+## PatchMatch Algorithm
+
+### Pseudocode for the PatchMatch Algorithm
+
+ Here's an outline of its core steps, followed by optimization strategies including vectorization and dynamic programming, and a brief analysis of its time and space complexity.
+
+
+```js
+// highlight-next-line
+function PatchMatch(imageA, imageB, patchSize)
+    Initialize nearestNeighborField (NNF) with random values
+    for iteration = 1 to maxIterations do
+        // Propagation: Improve guess by comparing with adjacent patches
+        if iteration is odd then
+            for x = 1 to imageWidth do
+                for y = 1 to imageHeight do
+                    Propagate(NNF, x, y, patchSize, isOddIteration=true)
+                    RandomSearch(NNF, x, y, imageA, imageB, patchSize)
+        else
+            for x = imageWidth down to 1 do
+                for y = imageHeight down to 1 do
+                    Propagate(NNF, x, y, patchSize, isOddIteration=false)
+                    RandomSearch(NNF, x, y, imageA, imageB, patchSize)
+    return NNF
+// highlight-next-line
+function Propagate(NNF, x, y, patchSize, isOddIteration)
+    currentBest = NNF[x, y]
+    if isOddIteration then
+        left = NNF[x-1, y]
+        up = NNF[x, y-1]
+        CheckAndUpdateBest(NNF, x, y, left, patchSize)
+        CheckAndUpdateBest(NNF, x, y, up, patchSize)
+    else
+        right = NNF[x+1, y]
+        down = NNF[x, y+1]
+        CheckAndUpdateBest(NNF, x, y, right, patchSize)
+        CheckAndUpdateBest(NNF, x, y, down, patchSize)
+
+// highlight-next-line
+function RandomSearch(NNF, x, y, imageA, imageB, patchSize)
+    currentBest = NNF[x, y]
+    searchRadius = max(imageWidth, imageHeight)
+    while searchRadius > 1 do
+        randomPatch = ChooseRandomPatch(imageB, searchRadius, currentBest)
+        CheckAndUpdateBest(NNF, x, y, randomPatch, patchSize)
+        searchRadius = searchRadius / 2
+```
+
+### Brute-Force Implementation in Python
+
+```python
+import numpy as np
+from skimage import io, util
+import matplotlib.pyplot as plt
+
+def patch_distance(patch1, patch2, mask):
+    """
+    Compute the L2 distance between two patches, using a mask to exclude
+    invalid pixels.
+    
+    Args:
+    - patch1: First patch.
+    - patch2: Second patch.
+    - mask: A boolean mask indicating valid pixels (True=valid).
+
+    Returns:
+    - The L2 distance between the valid pixels of the two patches.
+    """
+    diff = patch1 - patch2
+    valid_diff = diff[mask]
+    distance = np.sum(valid_diff ** 2)
+    return distance
+
+def extract_patch(image, x, y, k, padding='mirror'):
+    """
+    Extracts a patch centered at (x, y) with size kxk from the image, applying
+    padding if necessary.
+
+    Args:
+    - image: The source image.
+    - x, y: Center coordinates of the patch.
+    - k: Size of the patch (assumed to be odd).
+    - padding: Method of padding to use for boundary patches.
+
+    Returns:
+    - The extracted patch.
+    - A mask indicating valid pixels within the patch.
+    """
+    padded_image = util.pad(image, ((k//2, k//2), (k//2, k//2), (0, 0)), mode=padding)
+    patch = padded_image[y:y+k, x:x+k]
+    # All pixels are valid if extracted from the padded image
+    mask = np.ones((k, k), dtype=bool)
+    return patch, mask
+
+def bruteForceNNF(target_image, source_image, k):
+    """
+    Computes the nearest neighbor field (NNF) from target_image to source_image
+    using a brute-force approach.
+
+    Args:
+    - target_image: The target image.
+    - source_image: The source image.
+    - k: The patch size.
+
+    Returns:
+    - NNF: A 2-D array with the same size as target_image containing for each
+           pixel the coordinates of the closest patch in the source image.
+    """
+    target_h, target_w, _ = target_image.shape
+    source_h, source_w, _ = source_image.shape
+    NNF = np.zeros((target_h, target_w, 2), dtype=np.int32)
+
+    for y in range(target_h):
+        for x in range(target_w):
+            min_distance = np.inf
+            min_coords = (0, 0)
+            target_patch, target_mask = extract_patch(target_image, x, y, k)
+
+            for sy in range(source_h - k + 1):
+                for sx in range(source_w - k + 1):
+                    source_patch, _ = extract_patch(source_image, sx, sy, k, padding='edge')
+                    distance = patch_distance(target_patch, source_patch, target_mask)
+
+                    if distance < min_distance:
+                        min_distance = distance
+                        min_coords = (sy, sx)
+            
+            NNF[y, x] = min_coords
+
+    return NNF
+
+# Example usage
+target_image = io.imread('target.png') / 255.0
+source_image = io.imread('source.png') / 255.0
+k = 11  # Patch size
+
+NNF = bruteForceNNF(target_image, source_image, k)
+print("NNF computed.")
+```
+
+### Thought Process and Optimization Opportunities
+
+1. **Brute-force Approach**: This code iterates over every pixel in the target image and compares its patch with every possible patch in the source image. It's a direct but slow method due to the nested loops.
+
+2. **Optimization - Vectorization and Avoid Repetition**: The `patch_distance` computation is ripe for optimization. By using NumPy operations over loops, we can reduce computation time. However, due to the need to compare all pairs of patches, complete vectorization is challenging without significantly increasing memory usage. The brute-force method recalculates distances for overlapping patches. Caching results for previously calculated patches or using integral images to quickly calculate patch sums could reduce redundant calculations.
+
+4. **Dynamic Programming**: Can you use Dynamic Programming to speed up the computations? It could be used to propagate good matches to adjacent pixels, which _is_ more efficient. What do you think?
+
+5. **Space Complexity**: The NNF array has a size proportional to the target image ($\mathcal{O}(\text{target}_h * \text{target}_w$)), storing two integers (coordinates) for each pixel.
+
+6. **Time Complexity**: $\mathcal{O}(\text{target}_h * \text{target}_w * (\text{source}_h-k+1) * (\text{source}_w-k+1) * k^2)$ due to the exhaustive search. This highlights the need for the PatchMatch algorithm, which significantly improves the runtime.
+
+---
+
+So I provided a very rough implementation in Python that took way too long and one that I need to improve upon. But maybe this gives you some insight into how the algorithm works for the brute force method. 
+{/* 
+```python {5,28,46,79}
+import numpy as np
+import random
+
+
+def initialize_nnf(imageA_shape, imageB_shape, patch_size):
+    """
+    Initialize the Nearest Neighbor Field (NNF) with random values.
+
+    Args:
+    - imageA_shape: Shape of the source image (height, width).
+    - imageB_shape: Shape of the target image (height, width).
+    - patch_size: Size of the patch.
+
+    Returns:
+    - A numpy array representing the NNF with dimensions (height, width, 2).
+      Each entry contains the (y, x) offset of the best matching patch in imageB.
+    """
+    A_height, A_width = imageA_shape[:2]
+    B_height, B_width = imageB_shape[:2]
+    
+    # Randomly initialize the offsets within the valid range
+    nnf = np.zeros((A_height, A_width, 2), dtype=np.int32)
+    nnf[..., 0] = np.random.randint(0, B_height - patch_size, size=(A_height, A_width))
+    nnf[..., 1] = np.random.randint(0, B_width - patch_size, size=(A_height, A_width))
+    
+    return nnf
+
+def compute_patch_distance(imageA, imageB, patch_size, ay, ax, by, bx):
+    """
+    Compute the distance (sum of squared differences) between a patch in imageA and a patch in imageB.
+
+    Args:
+    - imageA, imageB: Source and target images.
+    - patch_size: Size of the patch.
+    - ay, ax: Coordinates of the patch in imageA.
+    - by, bx: Coordinates of the patch in imageB.
+
+    Returns:
+    - The SSD (sum of squared differences) between the two patches.
+    """
+    patchA = imageA[ay:ay+patch_size, ax:ax+patch_size]
+    patchB = imageB[by:by+patch_size, bx:bx+patch_size]
+    # Compute the sum of squared differences (SSD) between patches
+    return np.sum((patchA - patchB) ** 2)
+
+def propagate(nnf, imageA, imageB, patch_size, direction=1):
+    """
+    Propagate step: improve the NNF by comparing each patch with its neighbors.
+
+    Args:
+    - nnf: Current nearest neighbor field.
+    - imageA, imageB: Source and target images.
+    - patch_size: Size of the patch.
+    - direction: Propagation direction (1 for forward, -1 for backward).
+    """
+    A_height, A_width = imageA.shape[:2]
+    for ay in range(0, A_height, direction):
+        for ax in range(0, A_width, direction):
+            current_best = nnf[ay, ax]
+            best_distance = compute_patch_distance(imageA, imageB, patch_size, ay, ax, current_best[0], current_best[1])
+            
+            # Check the patch above (or below) in the current direction
+            if 0 <= ay - direction < A_height:
+                candidate = nnf[ay - direction, ax] + np.array([direction, 0])
+                if 0 <= candidate[0] < A_height - patch_size and 0 <= candidate[1] < A_width - patch_size:
+                    distance = compute_patch_distance(imageA, imageB, patch_size, ay, ax, candidate[0], candidate[1])
+                    if distance < best_distance:
+                        nnf[ay, ax] = candidate
+                        best_distance = distance
+                        
+            # Check the patch left (or right) in the current direction
+            if 0 <= ax - direction < A_width:
+                candidate = nnf[ay, ax - direction] + np.array([0, direction])
+                if 0 <= candidate[0] < A_height - patch_size and 0 <= candidate[1] < A_width - patch_size:
+                    distance = compute_patch_distance(imageA, imageB, patch_size, ay, ax, candidate[0], candidate[1])
+                    if distance < best_distance:
+                        nnf[ay, ax] = candidate
+
+def random_search(nnf, imageA, imageB, patch_size, search_radius):
+    """
+    Random search step: improve the NNF by exploring random locations in imageB.
+
+    Args:
+    - nnf: Current nearest neighbor field.
+    - imageA, imageB: Source and target images.
+    - patch_size: Size of the patch.
+    - search_radius: Initial search radius.
+    """
+    A_height, A_width = imageA.shape[:2]
+    B_height, B_width = imageB.shape[:2]
+    
+    for ay in range(A_height):
+        for ax in range(A_width):
+            current_best = nnf[ay, ax]
+            best_distance = compute_patch_distance(imageA, imageB, patch_size, ay, ax, current_best[0], current_best[1])
+            
+            radius = search_radius
+            while radius >= 1:
+                # Generate random offset within the search radius
+                ry = np.random.randint(-radius, radius + 1)
+                rx = np.random.randint(-radius, radius + 1)
+                candidate = current_best + np.array([ry, rx])
+                
+                # Ensure the candidate is within image boundaries
+                if 0 <= candidate[0] < B_height - patch_size and 0 <= candidate[1] < B_width - patch_size:
+                    distance = compute_patch_distance(imageA, imageB, patch_size, ay, ax, candidate[0], candidate[1])
+                    if distance < best_distance:
+                        nnf[ay, ax] = candidate
+                        best_distance = distance
+                radius //= 2
+```
+
+#### Optimization Strategies
+
+1. **Vectorization**: Replace explicit loops with array operations. In Python, for example, NumPy operations can perform computations on entire arrays at once. This reduces the overhead of interpreting the loop and can leverage optimized, low-level libraries.
+
+   - **Before**: Using loops to iterate through `NNF` and update values.
+   - **After**: Using slicing and broadcasting to update `NNF` in bulk where possible.
+
+2. **Dynamic Programming**: Store intermediate results that are frequently recomputed. For PatchMatch, caching distances for previously compared patches can avoid redundant calculations.
+
+3. **Parallel Processing**: Given the independent nature of operations on different patches, utilize multi-threading or GPU acceleration where possible, especially in the `RandomSearch` and `Propagate` steps.
+
+#### Time and Space Complexity
+
+- **Time Complexity**: O(N * M * iter * S), where N and M are the dimensions of the input images, `iter` is the number of iterations, and `S` is the search effort per iteration (affected by propagation and random search strategies). The actual runtime can be significantly less due to the rapid convergence of the algorithm.
+  
+- **Space Complexity**: O(N * M), primarily to store the nearest neighbor field (NNF). If the NNF includes both offset and distance information for each patch, this might increase by a constant factor, but remains O(N * M). */}

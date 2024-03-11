@@ -65,4 +65,28 @@ Embossing filters are designed to create a three-dimensional effect in an image,
 Custom kernels are designed to perform specific image processing tasks, such as blurring, sharpening, edge detection, and embossing. An example of a custom kernel is the unsharp mask, which is designed to enhance the edges and fine details in an image, resulting in a more pronounced appearance.
 
 
+## The Bilateral Filter
+
+We have discussed many filters that can be expressed as a convolution operation. However,  there exists a family of non-convolutional filters (non-linear kernels). Enter, the bilateral filter.
+
+The bilateral filter is a non-linear, edge-preserving, and noise-reducing smoothing filter that is widely used in image processing. It is based on the concept of weighted averaging, where the weights are determined by both the spatial distance and the intensity difference between the pixels. This allows the bilateral filter to preserve the edges and fine details in an image, while reducing the noise and smoothing the overall appearance.
+
+Traditional Gaussian filters are very useful, but only consider the differences in sample position. Hence, they are not very effective in preserving edges, as they tend to over-smooth the image. 
+
+The bilateral filter is defined as:
+
+$$
+BF[I]_p = \frac{1}{W_p} \sum_{q \in \Omega} G_{\sigma_s}(\|p-q\|) G_{\sigma_r}(\|I_p-I_q\|) I_q
+$$
+
+where $BF[I]_p$ is the output image, $W_p$ is the normalization factor, $G_{\sigma_s}$ is the spatial Gaussian function, $G_{\sigma_r}$ is the intensity Gaussian function, and $\Omega$ is the neighborhood of the pixel $p$.
+
+The weight $W(x,y)$ is determined by both the spatial distance and the intensity difference between the pixels, and is given by:
+
+$$
+W_p = \sum_{q \in \Omega} G_{\sigma_s}(\|p-q\|) G_{\sigma_r}(\|I_p-I_q\|)
+$$
+
+where $W_p$ is the weight, $G_{\sigma_s}$ is the spatial Gaussian function, $G_{\sigma_r}$ is the intensity Gaussian function, and $\Omega$ is the neighborhood of the pixel $p$.
+
 

@@ -14,7 +14,7 @@ import rehypeKatex from 'rehype-katex';
 const config = {
   title: 'ECE 178 Notes',
   tagline: 'Digital Image Processing',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.svg',
   
 
   // Set the production url of your site here
@@ -93,7 +93,8 @@ const config = {
         title: 'ECE 178 Notes',
         logo: {
           alt: 'ECE 178 Logo',
-          src: 'img/logo-ece178.webp',
+          src: 'img/ace-final-ct.svg',
+          // src: 'img/logo-ece178.webp',
         },
         items: [
           {
