@@ -6,7 +6,7 @@
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://ece178.amilworks.io/blog"/>
     <subtitle>ECE 178 Notes Blog</subtitle>
-    <icon>https://ece178.amilworks.io/img/favicon.ico</icon>
+    <icon>https://ece178.amilworks.io/img/favicon.svg</icon>
     <entry>
         <title type="html"><![CDATA[Welcome]]></title>
         <id>https://ece178.amilworks.io/blog/welcome</id>
