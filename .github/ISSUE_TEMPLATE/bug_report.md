@@ -8,7 +8,7 @@ assignees: ''
 ---
 
 **Describe the bug**
-A clear and concise description of what the bug is.
+A clear and concise description of what the bug is. For instance, one of the proof lines are incorrect or maybe inconsistent notation between the class and my notes. Another instance can be some of the visualizations may not be rendering correctly.
 
 **To Reproduce**
 Steps to reproduce the behavior:
@@ -29,8 +29,8 @@ If applicable, add screenshots to help explain your problem.
  - Version [e.g. 22]
 
 **Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
+ - Device: [e.g. iPad]
+ - OS: [e.g. iOS18.1]
  - Browser [e.g. stock browser, safari]
  - Version [e.g. 22]
 
