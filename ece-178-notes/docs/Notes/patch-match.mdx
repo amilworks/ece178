@@ -337,3 +337,53 @@ def random_search(nnf, imageA, imageB, patch_size, search_radius):
 - **Time Complexity**: O(N * M * iter * S), where N and M are the dimensions of the input images, `iter` is the number of iterations, and `S` is the search effort per iteration (affected by propagation and random search strategies). The actual runtime can be significantly less due to the rapid convergence of the algorithm.
   
 - **Space Complexity**: O(N * M), primarily to store the nearest neighbor field (NNF). If the NNF includes both offset and distance information for each patch, this might increase by a constant factor, but remains O(N * M). */}
+
+
+## Problems
+
+### Problem 1
+
+What is the time complexity of the brute-force implementation of the PatchMatch algorithm?
+
+- $\mathcal{O}(N * M * iter * S)$
+- $\mathcal{O}(N * M * S)$
+- $\mathcal{O}(N * M * iter)$
+- $\mathcal{O}(N * M)$
+
+### Problem 2
+
+Which of the following is a potential optimization strategy for the PatchMatch algorithm?
+
+- [ ] Vectorization
+- [ ] Dynamic Programming
+- [ ] Parallel Processing
+- [ ] All of the above
+
+### Problem 3
+
+What is the space complexity of the PatchMatch algorithm?
+
+- [ ] $\mathcal{O}(N * M * iter * S)$
+- [ ] $\mathcal{O}(N * M * S)$
+- [ ] $\mathcal{O}(N * M * iter)$
+- [ ] $\mathcal{O}(N * M)$
+
+### Problem 4
+
+In the context of the Patch Match algorithm, "coherence" refers to a specific property that significantly influences the algorithm's performance and accuracy. Which of the following best describes the role of coherence in Patch Match?
+
+- [ ] Coherence ensures that the algorithm runs at a constant time complexity regardless of the image size, by enforcing a strict order in which patches are compared.
+
+- [ ] It refers to the likelihood that neighboring pixels in the image space will have similar or closely related best matching patches, which the algorithm exploits to propagate good matches across the image.
+
+- [ ] Coherence is the process by which the algorithm removes all noise from an image before computing the nearest-neighbor field (NNF), ensuring that only coherent (noise-free) patches are analyzed.
+
+- [ ] The term describes the algorithm’s ability to maintain temporal consistency in video sequences, ensuring that patch matches do not flicker or change abruptly from one frame to the next.
+
+
+
+
+
+
+
+
