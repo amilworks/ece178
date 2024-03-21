@@ -158,7 +158,7 @@ const config = {
               },
               {
                 label: 'Amilworks',
-                href: 'https://amilworks.io',
+                href: 'https://www.amilworks.io',
               },
               {
                 label: 'UCSB ECE Department',
