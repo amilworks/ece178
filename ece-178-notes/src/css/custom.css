@@ -20,7 +20,7 @@
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
-  --ifm-color-primary: #00d4ff;
+  --ifm-color-primary: #13F2F2;
   --ifm-color-primary-dark: #21af90;
   --ifm-color-primary-darker: #1fa588;
   --ifm-color-primary-darkest: #1a8870;
@@ -66,3 +66,57 @@ h1, h2, h3, h4, h5, h6 {
   /* margin-top: 2rem; */
   box-shadow: 0 0 100px 0 rgba(159, 159, 159, 0.25);
 }
+
+
+/* Define variables for light mode */
+:root {
+  --highlight-bg-color: #FFF36D; /* Light mode: Vivid Yellow */
+  --highlight-text-color: #000000; /* Light mode text color: Black */
+  --selection-bg-color: #f2f2f2; /* Bright yellow for light mode */
+  --selection-text-color: #635bff; /* Black text on selection for light mode */
+}
+
+/* Override variables for dark mode */
+[data-theme='dark'] {
+  --highlight-bg-color: #FFF36D; /* Dark mode: Lime Green */
+  --highlight-text-color: #000000; /* Dark mode text color: Black */
+}
+
+/* Highlighting class with slightly updated styles for more aesthetic appeal */
+.highlight {
+  background-color: var(--highlight-bg-color);
+  color: var(--highlight-text-color);
+  padding: 0.2em 0.4em; /* Adjusted padding for better visual */
+  border-radius: 0.3em;
+  margin: 0; /* Adjust as needed */
+  box-decoration-break: clone; /* Ensures the background extends over line breaks */
+  -webkit-box-decoration-break: clone;
+}
+
+
+
+/* Custom selection styles for dark mode */
+[data-theme='dark'] {
+  --selection-bg-color: #292929; /* Lime green for dark mode */
+  --selection-text-color: #13F2F2; /* Black text on selection for dark mode */
+}
+
+/* Apply custom selection styles */
+::selection {
+  background-color: var(--selection-bg-color);
+  color: var(--selection-text-color);
+}
+
+/* For Mozilla Firefox */
+::-moz-selection {
+  background-color: var(--selection-bg-color);
+  color: var(--selection-text-color);
+}
+
+
+.glass-effect {
+  backdrop-filter: blur(4px);
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+

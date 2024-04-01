@@ -98,103 +98,7 @@ function RandomSearch(NNF, x, y, imageA, imageB, patchSize)
         searchRadius = searchRadius / 2
 ```
 
-### Brute-Force Implementation in Python
 
-:::warning Under construction
-
-Please do not use this as I am not finished with this implementation. I will update this as soon as I am done with it.
-
-:::
-
-```python
-import numpy as np
-from skimage import io, util
-import matplotlib.pyplot as plt
-
-def patch_distance(patch1, patch2, mask):
-    """
-    Compute the L2 distance between two patches, using a mask to exclude
-    invalid pixels.
-    
-    Args:
-    - patch1: First patch.
-    - patch2: Second patch.
-    - mask: A boolean mask indicating valid pixels (True=valid).
-
-    Returns:
-    - The L2 distance between the valid pixels of the two patches.
-    """
-    diff = patch1 - patch2
-    valid_diff = diff[mask]
-    distance = np.sum(valid_diff ** 2)
-    return distance
-
-def extract_patch(image, x, y, k, padding='mirror'):
-    """
-    Extracts a patch centered at (x, y) with size kxk from the image, applying
-    padding if necessary.
-
-    Args:
-    - image: The source image.
-    - x, y: Center coordinates of the patch.
-    - k: Size of the patch (assumed to be odd).
-    - padding: Method of padding to use for boundary patches.
-
-    Returns:
-    - The extracted patch.
-    - A mask indicating valid pixels within the patch.
-    """
-    padded_image = util.pad(image, ((k//2, k//2), (k//2, k//2), (0, 0)), mode=padding)
-    patch = padded_image[y:y+k, x:x+k]
-    # All pixels are valid if extracted from the padded image
-    mask = np.ones((k, k), dtype=bool)
-    return patch, mask
-
-def bruteForceNNF(target_image, source_image, k):
-    """
-    Computes the nearest neighbor field (NNF) from target_image to source_image
-    using a brute-force approach.
-
-    Args:
-    - target_image: The target image.
-    - source_image: The source image.
-    - k: The patch size.
-
-    Returns:
-    - NNF: A 2-D array with the same size as target_image containing for each
-           pixel the coordinates of the closest patch in the source image.
-    """
-    target_h, target_w, _ = target_image.shape
-    source_h, source_w, _ = source_image.shape
-    NNF = np.zeros((target_h, target_w, 2), dtype=np.int32)
-
-    for y in range(target_h):
-        for x in range(target_w):
-            min_distance = np.inf
-            min_coords = (0, 0)
-            target_patch, target_mask = extract_patch(target_image, x, y, k)
-
-            for sy in range(source_h - k + 1):
-                for sx in range(source_w - k + 1):
-                    source_patch, _ = extract_patch(source_image, sx, sy, k, padding='edge')
-                    distance = patch_distance(target_patch, source_patch, target_mask)
-
-                    if distance < min_distance:
-                        min_distance = distance
-                        min_coords = (sy, sx)
-            
-            NNF[y, x] = min_coords
-
-    return NNF
-
-# Example usage
-target_image = io.imread('target.png') / 255.0
-source_image = io.imread('source.png') / 255.0
-k = 11  # Patch size
-
-NNF = bruteForceNNF(target_image, source_image, k)
-print("NNF computed.")
-```
 
 ### Thought Process and Optimization Opportunities
 
@@ -210,7 +114,6 @@ print("NNF computed.")
 
 ---
 
-So I provided a very rough implementation in Python that took way too long and one that I need to improve upon. But maybe this gives you some insight into how the algorithm works for the brute force method. 
 {/* 
 ```python {5,28,46,79}
 import numpy as np
@@ -356,12 +259,8 @@ What is the time complexity of the brute-force implementation of the PatchMatch 
 
 ### Problem 2
 
-Which of the following is a potential optimization strategy for the PatchMatch algorithm?
+Explain how the PatchMatch algorithm works. What are the key differences between the Brute Force approach and the PatchMatch algorithm? 
 
-- [ ] Vectorization
-- [ ] Dynamic Programming
-- [ ] Parallel Processing
-- [ ] All of the above
 
 ### Problem 3
 
@@ -382,9 +281,16 @@ In the context of the Patch Match algorithm, "coherence" refers to a specific pr
 
 - [ ] Coherence is the process by which the algorithm removes all noise from an image before computing the nearest-neighbor field (NNF), ensuring that only coherent (noise-free) patches are analyzed.
 
-- [ ] The term describes the algorithm’s ability to maintain temporal consistency in video sequences, ensuring that patch matches do not flicker or change abruptly from one frame to the next.
+- [ ] The term describes the algorithm's ability to maintain temporal consistency in video sequences, ensuring that patch matches do not flicker or change abruptly from one frame to the next.
 
+### Problem 5
 
+Which of the following is a potential optimization strategy for the PatchMatch algorithm?
+
+- [ ] Vectorization
+- [ ] Dynamic Programming
+- [ ] Parallel Processing
+- [ ] All of the above
 
 
 
